@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Manage Users | ALA QUIZPEDIA Admin</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+  <div class="bg-orbs"><div class="orb orb-1"></div><div class="orb orb-3"></div></div>
+
+  <nav class="navbar scrolled" id="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="nav-logo">
+        <span class="logo-icon">📚</span>
+        <span class="logo-text">ALA<span class="accent">QUIZPEDIA</span></span>
+      </a>
+      <div class="nav-links" id="navLinks">
+        <a href="admin.html" class="nav-link">← Dashboard</a>
+        <div class="nav-user" id="navUser">
+          <div class="user-menu" id="userMenuBtn">
+            <div class="user-avatar" id="userAvatar">A</div>
+            <span id="userDisplayName">Admin</span>
+            <span class="chevron">▾</span>
+          </div>
+          <div class="user-dropdown hidden" id="userDropdown">
+            <a href="#" class="dropdown-item" id="logoutBtn">↩ Logout</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <div class="admin-layout">
+    <aside class="admin-sidebar">
+      <div class="sidebar-label">Main</div>
+      <nav class="sidebar-nav">
+        <a href="admin.html" class="sidebar-link">📊 Dashboard</a>
+        <a href="admin-quizzes.html" class="sidebar-link">📝 Manage Quizzes</a>
+        <a href="admin-quiz-edit.html" class="sidebar-link">➕ Create Quiz</a>
+        <a href="admin-images.html" class="sidebar-link">🖼 Manage Images</a>
+        <a href="admin-materials.html" class="sidebar-link">📖 Study Materials</a>
+        <a href="admin-users.html" class="sidebar-link active">👥 Manage Users</a>
+        <a href="admin-data.html" class="sidebar-link">💾 Import/Export</a>
+      </nav>
+      <div class="sidebar-label" style="margin-top:1rem;">Navigation</div>
+      <nav class="sidebar-nav">
+        <a href="quizzes.html" class="sidebar-link">🎯 Browse Quizzes</a>
+        <a href="leaderboard.html" class="sidebar-link">🏆 Leaderboard</a>
+        <a href="index.html" class="sidebar-link">🏠 Homepage</a>
+      </nav>
+    </aside>
+
+    <main class="admin-main">
+      <div class="admin-page-header" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;">
+        <div>
+          <h1 class="admin-page-title">👥 Manage <span class="gradient-text">Users</span></h1>
+          <p class="admin-page-sub">Usernames must follow format: XXXX-XXXX</p>
+        </div>
+        <button class="btn btn-primary" onclick="openCreateUser()">➕ Add User</button>
+      </div>
+
+      <!-- Username format info -->
+      <div style="background:rgba(99,102,241,0.08);border:1px solid rgba(99,102,241,0.2);border-radius:var(--radius-md);padding:1rem 1.25rem;margin-bottom:1.5rem;font-size:0.88rem;color:var(--text-secondary);">
+        <strong style="color:var(--accent-blue);">📋 Username Rules:</strong> User accounts must use the format <code>XXXX-XXXX</code> (4 digits, a dash, 4 more digits — e.g. <code>1234-5678</code>). Random usernames are not allowed. Only you (admin) can create accounts here.
+      </div>
+
+      <div class="table-card">
+        <div style="overflow-x:auto;">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Avatar</th>
+                <th>Display Name</th>
+                <th>Username</th>
+                <th>Role</th>
+                <th>Joined</th>
+                <th>Quizzes Taken</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="usersBody">
+              <tr><td colspan="7" style="text-align:center;color:var(--text-muted);padding:3rem;">Loading...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Create User Modal -->
+  <div class="modal-overlay hidden" id="createUserModal">
+    <div class="modal">
+      <div class="modal-title">➕ Create New User Account</div>
+      <div style="background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.25);border-radius:var(--radius-md);padding:0.75rem 1rem;margin-bottom:1.25rem;font-size:0.85rem;color:#fbbf24;">
+        ⚠️ Username must be <strong>XXXX-XXXX</strong> format (e.g. 1234-5678). Other formats are rejected.
+      </div>
+      <div class="form-group">
+        <label class="form-label">Display Name</label>
+        <input type="text" class="form-input" id="newDisplayName" placeholder="Full name"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Username</label>
+        <input type="text" class="form-input" id="newUsername" placeholder="e.g. 1234-5678" maxlength="9"/>
+        <div class="form-hint">Exactly 4 digits, a dash, then 4 digits.</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input type="password" class="form-input" id="newPassword" placeholder="Min 8 chars, uppercase, number, symbol"/>
+        <div class="form-hint">Min 8 chars, 1 uppercase, 1 lowercase, 1 number, 1 special character.</div>
+      </div>
+      <div id="createUserError" class="form-error hidden"></div>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" onclick="closeCreateUser()">Cancel</button>
+        <button class="btn btn-primary" onclick="doCreateUser()">Create Account</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/storage.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    requireAdmin();
+
+    function renderUsers() {
+      const db = getDB();
+      const users = db.users || [];
+      const scores = db.scores || [];
+      const body = document.getElementById('usersBody');
+
+      if (users.length === 0) {
+        body.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--text-muted);padding:3rem;">No users yet.</td></tr>';
+        return;
+      }
+
+      body.innerHTML = users.map(u => {
+        const scoreCount = scores.filter(s => s.userId === u.id).length;
+        return `
+          <tr>
+            <td>
+              <div class="lb-avatar" style="background:${u.role==='admin'?'linear-gradient(135deg,#f59e0b,#f97316)':'linear-gradient(135deg,#6366f1,#8b5cf6)'};">
+                ${(u.displayName||u.username)[0].toUpperCase()}
+              </div>
+            </td>
+            <td style="font-weight:600;">${u.displayName||'—'}</td>
+            <td><code style="background:rgba(99,102,241,0.1);padding:2px 8px;border-radius:4px;">${u.username}</code></td>
+            <td>
+              <span class="badge ${u.role==='admin'?'badge-amber':'badge-blue'}">${u.role==='admin'?'⚙ Admin':'👤 User'}</span>
+            </td>
+            <td style="color:var(--text-muted);font-size:0.82rem;">${formatDate(u.createdAt)}</td>
+            <td style="font-weight:600;color:var(--accent-blue);">${scoreCount}</td>
+            <td>
+              ${u.role !== 'admin' ? `<button class="btn btn-danger btn-sm" onclick="deleteUser('${u.id}','${(u.displayName||u.username).replace(/'/g,"\\'")}')">🗑 Delete</button>` : '<span style="color:var(--text-muted);font-size:0.82rem;">Protected</span>'}
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function openCreateUser() {
+      document.getElementById('createUserModal').classList.remove('hidden');
+      document.getElementById('newDisplayName').value = '';
+      document.getElementById('newUsername').value = '';
+      document.getElementById('newPassword').value = '';
+      document.getElementById('createUserError').classList.add('hidden');
+      document.getElementById('newDisplayName').focus();
+    }
+
+    function closeCreateUser() {
+      document.getElementById('createUserModal').classList.add('hidden');
+    }
+
+    function doCreateUser() {
+      const displayName = document.getElementById('newDisplayName').value.trim();
+      const username = document.getElementById('newUsername').value.trim();
+      const password = document.getElementById('newPassword').value;
+      const errEl = document.getElementById('createUserError');
+
+      const result = registerUser(username, password, displayName);
+      if (result.success) {
+        closeCreateUser();
+        showToast(`✅ Account created for ${username}`, 'success');
+        renderUsers();
+      } else {
+        errEl.textContent = result.error;
+        errEl.classList.remove('hidden');
+      }
+    }
+
+    function deleteUser(id, name) {
+      if (confirm(`Delete user "${name}"? Their scores will also be removed.`)) {
+        const db = getDB();
+        db.users = db.users.filter(u => u.id !== id);
+        db.scores = db.scores.filter(s => s.userId !== id);
+        saveDB(db);
+        showToast('User deleted.', 'info');
+        renderUsers();
+      }
+    }
+
+    // Close modal on overlay click
+    document.getElementById('createUserModal').addEventListener('click', function(e) {
+      if (e.target === this) closeCreateUser();
+    });
+
+    // Enter key in modal
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') closeCreateUser();
+      if (e.key === 'Enter' && !document.getElementById('createUserModal').classList.contains('hidden')) doCreateUser();
+    });
+
+    renderUsers();
+  </script>
+</body>
+</html>

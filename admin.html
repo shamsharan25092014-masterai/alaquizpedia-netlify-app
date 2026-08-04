@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="description" content="Admin Dashboard — ALA QUIZPEDIA by A.SHAM SHARAN"/>
+  <title>Admin Dashboard | ALA QUIZPEDIA</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+  <div class="bg-orbs">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-3"></div>
+  </div>
+
+  <nav class="navbar scrolled" id="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="nav-logo">
+        <span class="logo-icon">📚</span>
+        <span class="logo-text">ALA<span class="accent">QUIZPEDIA</span></span>
+      </a>
+      <div class="nav-links" id="navLinks">
+        <a href="index.html" class="nav-link">← Back to Site</a>
+        <div class="nav-user" id="navUser">
+          <div class="user-menu" id="userMenuBtn">
+            <div class="user-avatar" id="userAvatar">A</div>
+            <span id="userDisplayName">Admin</span>
+            <span class="chevron">▾</span>
+          </div>
+          <div class="user-dropdown hidden" id="userDropdown">
+            <a href="#" class="dropdown-item" id="logoutBtn">↩ Logout</a>
+          </div>
+        </div>
+      </div>
+      <button class="hamburger" id="hamburger">☰</button>
+    </div>
+  </nav>
+
+  <div class="admin-layout">
+    <!-- Sidebar -->
+    <aside class="admin-sidebar" id="adminSidebar">
+      <div class="sidebar-label">Main</div>
+      <nav class="sidebar-nav">
+        <a href="admin.html" class="sidebar-link active">📊 Dashboard</a>
+        <a href="admin-quizzes.html" class="sidebar-link">📝 Manage Quizzes</a>
+        <a href="admin-quiz-edit.html" class="sidebar-link">➕ Create Quiz</a>
+        <a href="admin-images.html" class="sidebar-link">🖼 Manage Images</a>
+        <a href="admin-materials.html" class="sidebar-link">📖 Study Materials</a>
+        <a href="admin-users.html" class="sidebar-link">👥 Manage Users</a>
+        <a href="admin-data.html" class="sidebar-link">💾 Import/Export</a>
+      </nav>
+      <div class="sidebar-label" style="margin-top:1rem;">Navigation</div>
+      <nav class="sidebar-nav">
+        <a href="quizzes.html" class="sidebar-link">🎯 Browse Quizzes</a>
+        <a href="leaderboard.html" class="sidebar-link">🏆 Leaderboard</a>
+        <a href="index.html" class="sidebar-link">🏠 Homepage</a>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="admin-main">
+      <div class="admin-page-header">
+        <h1 class="admin-page-title">👋 Welcome, <span class="gradient-text" id="adminName">Admin</span></h1>
+        <p class="admin-page-sub">ALA QUIZPEDIA Admin Dashboard by A.SHAM SHARAN</p>
+      </div>
+
+      <!-- Stats Row -->
+      <div class="stats-row">
+        <div class="stat-box stat-box-blue">
+          <div class="stat-box-num" id="statQ">0</div>
+          <div class="stat-box-label">📝 Total Quizzes</div>
+        </div>
+        <div class="stat-box stat-box-green">
+          <div class="stat-box-num" id="statQues">0</div>
+          <div class="stat-box-label">❓ Total Questions</div>
+        </div>
+        <div class="stat-box stat-box-purple">
+          <div class="stat-box-num" id="statU">0</div>
+          <div class="stat-box-label">👥 Registered Users</div>
+        </div>
+        <div class="stat-box stat-box-amber">
+          <div class="stat-box-num" id="statS">0</div>
+          <div class="stat-box-label">🎯 Quiz Attempts</div>
+        </div>
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="table-card" style="margin-bottom:1.5rem;">
+        <div class="table-header">
+          <span class="table-title">⚡ Quick Actions</span>
+        </div>
+        <div style="padding:1.5rem;display:flex;gap:1rem;flex-wrap:wrap;">
+          <a href="admin-quiz-edit.html" class="btn btn-primary">➕ Create New Quiz</a>
+          <a href="admin-quiz-edit.html?generate=1" class="btn btn-success">🤖 Generate from Topic</a>
+          <a href="admin-quizzes.html" class="btn btn-ghost">📝 Manage All Quizzes</a>
+          <a href="admin-images.html" class="btn btn-ghost">🖼 Images Gallery</a>
+          <a href="admin-materials.html" class="btn btn-ghost">📖 Study Materials</a>
+          <a href="admin-users.html" class="btn btn-ghost">👥 Manage Users</a>
+          <a href="admin-data.html" class="btn btn-ghost">💾 Import/Export</a>
+        </div>
+      </div>
+
+
+      <!-- Recent Quizzes -->
+      <div class="table-card" style="margin-bottom:1.5rem;">
+        <div class="table-header">
+          <span class="table-title">📝 Recent Quizzes</span>
+          <a href="admin-quizzes.html" class="btn btn-ghost btn-sm">View All</a>
+        </div>
+        <div style="overflow-x:auto;">
+          <table class="data-table">
+            <thead><tr><th>Title</th><th>Category</th><th>Questions</th><th>Created</th><th>Actions</th></tr></thead>
+            <tbody id="recentQuizzes">
+              <tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:2rem;">No quizzes yet.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Recent Scores -->
+      <div class="table-card" style="margin-bottom:1.5rem;">
+        <div class="table-header">
+          <span class="table-title">🎯 Recent Quiz Attempts</span>
+          <a href="leaderboard.html" class="btn btn-ghost btn-sm">Leaderboard</a>
+        </div>
+        <div style="overflow-x:auto;">
+          <table class="data-table">
+            <thead><tr><th>Player</th><th>Quiz</th><th>Score</th><th>Date</th></tr></thead>
+            <tbody id="recentScores">
+              <tr><td colspan="4" style="text-align:center;color:var(--text-muted);padding:2rem;">No attempts yet.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Import/Export JSON Settings -->
+      <div class="table-card">
+        <div class="table-header">
+          <span class="table-title">💾 Backup &amp; Restore Database (JSON)</span>
+        </div>
+        <div style="padding:1.5rem; display:flex; gap:1.5rem; flex-wrap:wrap; align-items:center;">
+          <div>
+            <button class="btn btn-primary" onclick="exportData()">📥 Export DB to JSON</button>
+            <span style="font-size:0.85rem; color:var(--text-muted); margin-left:0.5rem;">Download all quizzes, scores, and users.</span>
+          </div>
+          <div style="border-left: 1px solid var(--border-color); padding-left:1.5rem; display:flex; align-items:center; gap:0.75rem;">
+            <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(event)"/>
+            <button class="btn btn-success" onclick="document.getElementById('importFile').click()">📤 Import JSON Backup</button>
+            <span style="font-size:0.85rem; color:var(--text-muted);">Warning: This will overwrite current data.</span>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="js/storage.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    const user = requireAdmin();
+    if (user) {
+      document.getElementById('adminName').textContent = user.displayName || user.username;
+    }
+
+    const db = getDB();
+    const quizzes = db.quizzes || [];
+    const users = db.users || [];
+    const scores = db.scores || [];
+
+    document.getElementById('statQ').textContent = quizzes.length;
+    document.getElementById('statQues').textContent = quizzes.reduce((a,q)=>a+(q.questions||[]).length,0);
+    document.getElementById('statU').textContent = users.filter(u=>u.role==='user').length;
+    document.getElementById('statS').textContent = scores.length;
+
+    // Recent quizzes
+    const rqBody = document.getElementById('recentQuizzes');
+    const recentQ = [...quizzes].reverse().slice(0,5);
+    if (recentQ.length > 0) {
+      rqBody.innerHTML = recentQ.map(q => `
+        <tr>
+          <td style="font-weight:600;">${q.title}</td>
+          <td><span class="badge badge-blue">${q.category||'General'}</span></td>
+          <td>${(q.questions||[]).length}</td>
+          <td style="color:var(--text-muted);font-size:0.82rem;">${formatDate(q.createdAt)}</td>
+          <td>
+            <div class="action-btns">
+              <a href="admin-quiz-edit.html?id=${q.id}" class="btn btn-ghost btn-sm">✏️ Edit</a>
+              <button class="btn btn-danger btn-sm" onclick="delQ('${q.id}')">🗑</button>
+            </div>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    // Recent scores
+    const rsBody = document.getElementById('recentScores');
+    const recentS = [...scores].reverse().slice(0,5);
+    if (recentS.length > 0) {
+      rsBody.innerHTML = recentS.map(s => `
+        <tr>
+          <td style="font-weight:600;">${s.displayName||s.username}</td>
+          <td style="color:var(--text-secondary);">${s.quizTitle}</td>
+          <td><span class="lb-score">${s.score}/${s.totalQuestions}</span> <span style="font-size:0.8rem;color:var(--text-muted);">(${Math.round(s.score/s.totalQuestions*100)}%)</span></td>
+          <td style="color:var(--text-muted);font-size:0.82rem;">${formatDate(s.completedAt)}</td>
+        </tr>
+      `).join('');
+    }
+
+    function delQ(id) {
+      if (confirm('Delete this quiz? This cannot be undone.')) {
+        deleteQuiz(id);
+        showToast('Quiz deleted.', 'info');
+        setTimeout(() => location.reload(), 600);
+      }
+    }
+
+    function exportData() {
+      const db = getDB();
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db, null, 2));
+      const downloadAnchor = document.createElement('a');
+      downloadAnchor.setAttribute("href", dataStr);
+      downloadAnchor.setAttribute("download", `alaquizpedia_db_${Date.now()}.json`);
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      downloadAnchor.remove();
+      showToast('✅ Database backup downloaded!', 'success');
+    }
+
+    function importData(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        const res = importDatabase(evt.target.result);
+        if (res.success) {
+          showToast('✅ Database restored successfully!', 'success');
+          setTimeout(() => location.reload(), 1000);
+        } else {
+          showToast('❌ Import failed: ' + res.error, 'error');
+        }
+      };
+      reader.readAsText(file);
+    }
+  </script>
+</body>
+</html>

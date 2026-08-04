@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="description" content="Study Materials Management — ALA QUIZPEDIA by A.SHAM SHARAN"/>
+  <title>Study Materials | ALA QUIZPEDIA</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="css/style.css"/>
+  <style>
+    .mat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.25rem; margin-top: 1.5rem; }
+    .mat-card {
+      background: var(--bg-card); border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg); overflow: hidden; transition: var(--transition);
+      animation: fadeSlideIn 0.4s ease both;
+    }
+    .mat-card:hover { border-color: var(--border-hover); box-shadow: var(--shadow-glow); transform: translateY(-2px); }
+    .mat-card-header {
+      padding: 1.2rem 1.5rem; border-bottom: 1px solid var(--border-color);
+      display: flex; align-items: flex-start; gap: 0.75rem;
+    }
+    .mat-icon {
+      width: 44px; height: 44px; border-radius: var(--radius-md); flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center; font-size: 1.3rem;
+    }
+    .mat-icon-pdf { background: rgba(244,63,94,0.15); }
+    .mat-icon-note { background: rgba(99,102,241,0.15); }
+    .mat-icon-link { background: rgba(6,182,212,0.15); }
+    .mat-icon-video { background: rgba(245,158,11,0.15); }
+    .mat-card-info { flex: 1; min-width: 0; }
+    .mat-card-title {
+      font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 1rem;
+      color: var(--text-primary); margin-bottom: 0.2rem;
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .mat-card-meta { font-size: 0.8rem; color: var(--text-muted); }
+    .mat-card-body { padding: 1rem 1.5rem; }
+    .mat-card-desc {
+      color: var(--text-secondary); font-size: 0.88rem; line-height: 1.5;
+      display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+    }
+    .mat-card-tags { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-top: 0.75rem; }
+    .mat-tag {
+      padding: 0.2rem 0.6rem; border-radius: var(--radius-full);
+      background: rgba(99,102,241,0.1); color: var(--accent-blue);
+      font-size: 0.72rem; font-weight: 600;
+    }
+    .mat-card-footer {
+      padding: 0.75rem 1.5rem; border-top: 1px solid var(--border-color);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .mat-actions { display: flex; gap: 0.5rem; }
+
+    /* Add/Edit Modal */
+    .modal-wide { max-width: 640px; }
+    .form-row { display: flex; gap: 1rem; }
+    .form-row > * { flex: 1; }
+    .mat-content-editor {
+      min-height: 150px; max-height: 400px; overflow-y: auto;
+      background: rgba(0,0,0,0.2); border: 1px solid var(--border-color);
+      border-radius: var(--radius-md); padding: 1rem;
+      color: var(--text-primary); font-family: 'Inter', sans-serif;
+      font-size: 0.9rem; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;
+    }
+    .mat-content-editor:focus { outline: none; border-color: var(--accent-blue); }
+    .char-count { font-size: 0.75rem; color: var(--text-muted); text-align: right; margin-top: 0.3rem; }
+
+    /* Preview Modal */
+    .preview-content {
+      background: rgba(0,0,0,0.2); border: 1px solid var(--border-color);
+      border-radius: var(--radius-md); padding: 1.5rem;
+      color: var(--text-secondary); font-size: 0.92rem; line-height: 1.7;
+      max-height: 60vh; overflow-y: auto; white-space: pre-wrap; word-wrap: break-word;
+    }
+
+    @media (max-width: 600px) {
+      .mat-grid { grid-template-columns: 1fr; }
+      .form-row { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-orbs">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-3"></div>
+  </div>
+
+  <nav class="navbar scrolled" id="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="nav-logo">
+        <span class="logo-icon">📚</span>
+        <span class="logo-text">ALA<span class="accent">QUIZPEDIA</span></span>
+      </a>
+      <div class="nav-links" id="navLinks">
+        <a href="index.html" class="nav-link">← Back to Site</a>
+        <div class="nav-user" id="navUser">
+          <div class="user-menu" id="userMenuBtn">
+            <div class="user-avatar" id="userAvatar">A</div>
+            <span id="userDisplayName">Admin</span>
+            <span class="chevron">▾</span>
+          </div>
+          <div class="user-dropdown hidden" id="userDropdown">
+            <a href="#" class="dropdown-item" id="logoutBtn">↩ Logout</a>
+          </div>
+        </div>
+      </div>
+      <button class="hamburger" id="hamburger">☰</button>
+    </div>
+  </nav>
+
+  <div class="admin-layout">
+    <!-- Sidebar -->
+    <aside class="admin-sidebar" id="adminSidebar">
+      <div class="sidebar-label">Main</div>
+      <nav class="sidebar-nav">
+        <a href="admin.html" class="sidebar-link">📊 Dashboard</a>
+        <a href="admin-quizzes.html" class="sidebar-link">📝 Manage Quizzes</a>
+        <a href="admin-quiz-edit.html" class="sidebar-link">➕ Create Quiz</a>
+        <a href="admin-images.html" class="sidebar-link">🖼 Manage Images</a>
+        <a href="admin-materials.html" class="sidebar-link active">📖 Study Materials</a>
+        <a href="admin-users.html" class="sidebar-link">👥 Manage Users</a>
+        <a href="admin-data.html" class="sidebar-link">💾 Import/Export</a>
+      </nav>
+      <div class="sidebar-label" style="margin-top:1rem;">Navigation</div>
+      <nav class="sidebar-nav">
+        <a href="quizzes.html" class="sidebar-link">🎯 Browse Quizzes</a>
+        <a href="leaderboard.html" class="sidebar-link">🏆 Leaderboard</a>
+        <a href="index.html" class="sidebar-link">🏠 Homepage</a>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="admin-main">
+      <div class="admin-page-header" style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:1rem;">
+        <div>
+          <h1 class="admin-page-title">📖 <span class="gradient-text">Study Materials</span></h1>
+          <p class="admin-page-sub">Create and manage study notes, reference links, and resource materials for students</p>
+        </div>
+        <button class="btn btn-primary" onclick="openAddModal()" id="addMaterialBtn">➕ Add Material</button>
+      </div>
+
+      <!-- Stats -->
+      <div class="stats-row" style="margin-bottom:1.5rem;">
+        <div class="stat-box stat-box-blue">
+          <div class="stat-box-num" id="statTotal">0</div>
+          <div class="stat-box-label">📖 Total Materials</div>
+        </div>
+        <div class="stat-box stat-box-green">
+          <div class="stat-box-num" id="statNotes">0</div>
+          <div class="stat-box-label">📝 Notes</div>
+        </div>
+        <div class="stat-box stat-box-purple">
+          <div class="stat-box-num" id="statLinks">0</div>
+          <div class="stat-box-label">🔗 Links</div>
+        </div>
+        <div class="stat-box stat-box-amber">
+          <div class="stat-box-num" id="statVideos">0</div>
+          <div class="stat-box-label">🎬 Videos</div>
+        </div>
+      </div>
+
+      <!-- Filters -->
+      <div class="filter-bar" id="filterBar">
+        <button class="filter-btn active" onclick="filterMaterials('all',this)">All</button>
+        <button class="filter-btn" onclick="filterMaterials('note',this)">📝 Notes</button>
+        <button class="filter-btn" onclick="filterMaterials('link',this)">🔗 Links</button>
+        <button class="filter-btn" onclick="filterMaterials('video',this)">🎬 Videos</button>
+        <button class="filter-btn" onclick="filterMaterials('pdf',this)">📄 PDFs</button>
+      </div>
+
+      <!-- Search -->
+      <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input type="text" class="form-input search-input" placeholder="Search materials..." id="searchInput" oninput="renderMaterials()"/>
+      </div>
+
+      <!-- Materials Grid -->
+      <div class="mat-grid" id="materialsGrid">
+        <div class="empty-state">
+          No study materials yet. Click <strong>➕ Add Material</strong> to create your first resource.
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Add/Edit Modal -->
+  <div class="modal-overlay hidden" id="materialModal">
+    <div class="modal modal-wide">
+      <div class="modal-title" id="modalTitle">➕ Add Study Material</div>
+
+      <div class="form-row" style="margin-bottom:1rem;">
+        <div>
+          <label class="form-label">Title *</label>
+          <input type="text" class="form-input" id="matTitle" placeholder="e.g. History of India — Chapter 1"/>
+        </div>
+        <div>
+          <label class="form-label">Type</label>
+          <select class="form-input" id="matType" onchange="toggleTypeFields()">
+            <option value="note">📝 Note / Text</option>
+            <option value="link">🔗 External Link</option>
+            <option value="video">🎬 Video Link</option>
+            <option value="pdf">📄 PDF Upload</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row" style="margin-bottom:1rem;">
+        <div>
+          <label class="form-label">Subject / Category</label>
+          <select class="form-input" id="matCategory">
+            <option value="General">General</option>
+            <option value="Science">Science</option>
+            <option value="History">History</option>
+            <option value="Geography">Geography</option>
+            <option value="Technology">Technology</option>
+            <option value="Sports">Sports</option>
+            <option value="Mathematics">Mathematics</option>
+            <option value="English">English</option>
+            <option value="Current Affairs">Current Affairs</option>
+          </select>
+        </div>
+        <div>
+          <label class="form-label">Tags (comma separated)</label>
+          <input type="text" class="form-input" id="matTags" placeholder="e.g. chapter1, important, exam"/>
+        </div>
+      </div>
+
+      <!-- Link Field (for link/video types) -->
+      <div id="linkField" class="hidden" style="margin-bottom:1rem;">
+        <label class="form-label">URL *</label>
+        <input type="url" class="form-input" id="matUrl" placeholder="https://example.com/resource"/>
+      </div>
+
+      <!-- PDF Upload Field -->
+      <div id="pdfField" class="hidden" style="margin-bottom:1rem;">
+        <label class="form-label">Upload PDF</label>
+        <input type="file" id="matPdf" accept=".pdf" class="form-input" style="padding:0.5rem;"/>
+        <div class="char-count" id="pdfInfo"></div>
+      </div>
+
+      <!-- Content/Description -->
+      <div style="margin-bottom:1rem;">
+        <label class="form-label" id="contentLabel">Content / Notes *</label>
+        <div class="mat-content-editor" contenteditable="true" id="matContent" oninput="updateCharCount()"></div>
+        <div class="char-count" id="charCount">0 characters</div>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+        <button class="btn btn-primary" onclick="saveMaterial()" id="saveBtn">💾 Save Material</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Preview Modal -->
+  <div class="modal-overlay hidden" id="previewModal">
+    <div class="modal modal-wide">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;">
+        <div class="modal-title" style="margin-bottom:0;" id="previewTitle">Preview</div>
+        <button class="btn btn-ghost btn-sm" onclick="closePreview()">✕ Close</button>
+      </div>
+      <div style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-bottom:1rem;" id="previewMeta"></div>
+      <div class="preview-content" id="previewContent"></div>
+      <div id="previewLink" class="hidden" style="margin-top:1rem;"></div>
+    </div>
+  </div>
+
+  <script src="js/storage.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    const user = requireAdmin();
+    let editingId = null;
+    let currentFilter = 'all';
+
+    // ---- Materials CRUD in localStorage ----
+    function getMaterials() {
+      const db = getDB();
+      return db.materials || [];
+    }
+
+    function saveMaterialToDB(material) {
+      const db = getDB();
+      if (!db.materials) db.materials = [];
+      const idx = db.materials.findIndex(m => m.id === material.id);
+      if (idx > -1) {
+        db.materials[idx] = material;
+      } else {
+        db.materials.push(material);
+      }
+      saveDB(db);
+    }
+
+    function deleteMaterialFromDB(id) {
+      const db = getDB();
+      if (db.materials) {
+        db.materials = db.materials.filter(m => m.id !== id);
+        saveDB(db);
+      }
+    }
+
+    // ---- Render ----
+    function renderMaterials() {
+      const materials = getMaterials();
+      const search = (document.getElementById('searchInput').value || '').toLowerCase();
+
+      let filtered = materials;
+      if (currentFilter !== 'all') {
+        filtered = filtered.filter(m => m.type === currentFilter);
+      }
+      if (search) {
+        filtered = filtered.filter(m =>
+          (m.title || '').toLowerCase().includes(search) ||
+          (m.category || '').toLowerCase().includes(search) ||
+          (m.tags || []).some(t => t.toLowerCase().includes(search)) ||
+          (m.content || '').toLowerCase().includes(search)
+        );
+      }
+
+      // Update stats
+      document.getElementById('statTotal').textContent = materials.length;
+      document.getElementById('statNotes').textContent = materials.filter(m => m.type === 'note').length;
+      document.getElementById('statLinks').textContent = materials.filter(m => m.type === 'link').length;
+      document.getElementById('statVideos').textContent = materials.filter(m => m.type === 'video').length;
+
+      const grid = document.getElementById('materialsGrid');
+      if (filtered.length === 0) {
+        grid.innerHTML = `<div class="empty-state">
+          ${search || currentFilter !== 'all' ? 'No materials match your search/filter.' : 'No study materials yet. Click <strong>➕ Add Material</strong> to create your first resource.'}
+        </div>`;
+        return;
+      }
+
+      grid.innerHTML = filtered.map((m, i) => {
+        const iconMap = { pdf: 'mat-icon-pdf', note: 'mat-icon-note', link: 'mat-icon-link', video: 'mat-icon-video' };
+        const emojiMap = { pdf: '📄', note: '📝', link: '🔗', video: '🎬' };
+        const iconClass = iconMap[m.type] || 'mat-icon-note';
+        const emoji = emojiMap[m.type] || '📝';
+        const tags = (m.tags || []).map(t => `<span class="mat-tag">${t}</span>`).join('');
+        const dateStr = m.createdAt ? formatDate(m.createdAt) : '';
+        const desc = m.content ? m.content.substring(0, 150) + (m.content.length > 150 ? '…' : '') : (m.url || 'No content');
+
+        return `
+          <div class="mat-card" style="animation-delay:${i * 0.05}s;">
+            <div class="mat-card-header">
+              <div class="mat-icon ${iconClass}">${emoji}</div>
+              <div class="mat-card-info">
+                <div class="mat-card-title">${m.title}</div>
+                <div class="mat-card-meta"><span class="badge badge-blue">${m.category || 'General'}</span> · ${dateStr}</div>
+              </div>
+            </div>
+            <div class="mat-card-body">
+              <div class="mat-card-desc">${desc}</div>
+              ${tags ? `<div class="mat-card-tags">${tags}</div>` : ''}
+            </div>
+            <div class="mat-card-footer">
+              <div class="mat-actions">
+                <button class="btn btn-ghost btn-sm" onclick="previewMaterial('${m.id}')">👁 View</button>
+                <button class="btn btn-ghost btn-sm" onclick="editMaterial('${m.id}')">✏️ Edit</button>
+                <button class="btn btn-danger btn-sm" onclick="deleteMaterial('${m.id}')">🗑</button>
+              </div>
+              ${m.url ? `<a href="${m.url}" target="_blank" class="btn btn-ghost btn-sm" style="color:var(--accent-cyan);">🔗 Open</a>` : ''}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function filterMaterials(type, btn) {
+      currentFilter = type;
+      document.querySelectorAll('#filterBar .filter-btn').forEach(b => b.classList.remove('active'));
+      if (btn) btn.classList.add('active');
+      renderMaterials();
+    }
+
+    // ---- Modal ----
+    function openAddModal() {
+      editingId = null;
+      document.getElementById('modalTitle').textContent = '➕ Add Study Material';
+      document.getElementById('saveBtn').textContent = '💾 Save Material';
+      document.getElementById('matTitle').value = '';
+      document.getElementById('matType').value = 'note';
+      document.getElementById('matCategory').value = 'General';
+      document.getElementById('matTags').value = '';
+      document.getElementById('matUrl').value = '';
+      document.getElementById('matContent').textContent = '';
+      document.getElementById('charCount').textContent = '0 characters';
+      if (document.getElementById('matPdf')) document.getElementById('matPdf').value = '';
+      if (document.getElementById('pdfInfo')) document.getElementById('pdfInfo').textContent = '';
+      toggleTypeFields();
+      document.getElementById('materialModal').classList.remove('hidden');
+    }
+
+    function editMaterial(id) {
+      const mat = getMaterials().find(m => m.id === id);
+      if (!mat) return;
+      editingId = id;
+      document.getElementById('modalTitle').textContent = '✏️ Edit Study Material';
+      document.getElementById('saveBtn').textContent = '💾 Update Material';
+      document.getElementById('matTitle').value = mat.title || '';
+      document.getElementById('matType').value = mat.type || 'note';
+      document.getElementById('matCategory').value = mat.category || 'General';
+      document.getElementById('matTags').value = (mat.tags || []).join(', ');
+      document.getElementById('matUrl').value = mat.url || '';
+      document.getElementById('matContent').textContent = mat.content || '';
+      updateCharCount();
+      toggleTypeFields();
+      document.getElementById('materialModal').classList.remove('hidden');
+    }
+
+    function closeModal() {
+      document.getElementById('materialModal').classList.add('hidden');
+      editingId = null;
+    }
+
+    function toggleTypeFields() {
+      const type = document.getElementById('matType').value;
+      const linkField = document.getElementById('linkField');
+      const pdfField = document.getElementById('pdfField');
+      const contentLabel = document.getElementById('contentLabel');
+
+      linkField.classList.add('hidden');
+      pdfField.classList.add('hidden');
+
+      if (type === 'link' || type === 'video') {
+        linkField.classList.remove('hidden');
+        contentLabel.textContent = 'Description / Notes';
+      } else if (type === 'pdf') {
+        pdfField.classList.remove('hidden');
+        contentLabel.textContent = 'Summary / Notes';
+      } else {
+        contentLabel.textContent = 'Content / Notes *';
+      }
+    }
+
+    function updateCharCount() {
+      const text = document.getElementById('matContent').textContent || '';
+      document.getElementById('charCount').textContent = text.length + ' characters';
+    }
+
+    function saveMaterial() {
+      const title = document.getElementById('matTitle').value.trim();
+      const type = document.getElementById('matType').value;
+      const category = document.getElementById('matCategory').value;
+      const tags = document.getElementById('matTags').value.split(',').map(t => t.trim()).filter(Boolean);
+      const url = document.getElementById('matUrl').value.trim();
+      const content = document.getElementById('matContent').textContent.trim();
+
+      if (!title) {
+        showToast('❌ Please enter a title.', 'error');
+        return;
+      }
+
+      if ((type === 'link' || type === 'video') && !url) {
+        showToast('❌ Please enter a URL.', 'error');
+        return;
+      }
+
+      if (type === 'note' && !content) {
+        showToast('❌ Please enter some content.', 'error');
+        return;
+      }
+
+      const material = {
+        id: editingId || 'mat-' + Date.now() + '-' + Math.floor(Math.random() * 1000),
+        title,
+        type,
+        category,
+        tags,
+        url: (type === 'link' || type === 'video') ? url : '',
+        content,
+        createdAt: editingId ? (getMaterials().find(m => m.id === editingId)?.createdAt || new Date().toISOString()) : new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      };
+
+      // Handle PDF upload
+      if (type === 'pdf') {
+        const pdfInput = document.getElementById('matPdf');
+        if (pdfInput.files && pdfInput.files[0]) {
+          const reader = new FileReader();
+          reader.onload = function(evt) {
+            material.pdfData = evt.target.result;
+            material.pdfName = pdfInput.files[0].name;
+            saveMaterialToDB(material);
+            showToast(editingId ? '✅ Material updated!' : '✅ Material added!', 'success');
+            closeModal();
+            renderMaterials();
+          };
+          reader.readAsDataURL(pdfInput.files[0]);
+          return;
+        }
+      }
+
+      saveMaterialToDB(material);
+      showToast(editingId ? '✅ Material updated!' : '✅ Material added!', 'success');
+      closeModal();
+      renderMaterials();
+    }
+
+    function deleteMaterial(id) {
+      if (!confirm('Delete this study material? This cannot be undone.')) return;
+      deleteMaterialFromDB(id);
+      showToast('🗑 Material deleted.', 'info');
+      renderMaterials();
+    }
+
+    // ---- Preview ----
+    function previewMaterial(id) {
+      const mat = getMaterials().find(m => m.id === id);
+      if (!mat) return;
+
+      document.getElementById('previewTitle').textContent = mat.title;
+      document.getElementById('previewMeta').innerHTML = `
+        <span class="badge badge-blue">${mat.category || 'General'}</span>
+        <span class="badge badge-purple">${mat.type.toUpperCase()}</span>
+        ${(mat.tags || []).map(t => `<span class="mat-tag">${t}</span>`).join('')}
+        <span style="color:var(--text-muted);font-size:0.8rem;">Created: ${mat.createdAt ? formatDate(mat.createdAt) : 'N/A'}</span>
+      `;
+      document.getElementById('previewContent').textContent = mat.content || 'No text content.';
+
+      const linkDiv = document.getElementById('previewLink');
+      if (mat.url) {
+        linkDiv.classList.remove('hidden');
+        linkDiv.innerHTML = `<a href="${mat.url}" target="_blank" class="btn btn-primary">🔗 Open ${mat.type === 'video' ? 'Video' : 'Link'}</a>`;
+      } else if (mat.pdfData) {
+        linkDiv.classList.remove('hidden');
+        linkDiv.innerHTML = `<a href="${mat.pdfData}" download="${mat.pdfName || 'document.pdf'}" class="btn btn-primary">📄 Download PDF: ${mat.pdfName || 'document.pdf'}</a>`;
+      } else {
+        linkDiv.classList.add('hidden');
+      }
+
+      document.getElementById('previewModal').classList.remove('hidden');
+    }
+
+    function closePreview() {
+      document.getElementById('previewModal').classList.add('hidden');
+    }
+
+    // Close modals on overlay click
+    document.getElementById('materialModal').addEventListener('click', function(e) {
+      if (e.target === this) closeModal();
+    });
+    document.getElementById('previewModal').addEventListener('click', function(e) {
+      if (e.target === this) closePreview();
+    });
+
+    // Initial render
+    renderMaterials();
+  </script>
+</body>
+</html>

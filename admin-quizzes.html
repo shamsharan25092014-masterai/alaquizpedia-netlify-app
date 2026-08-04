@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Manage Quizzes | ALA QUIZPEDIA Admin</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+  <div class="bg-orbs"><div class="orb orb-1"></div><div class="orb orb-3"></div></div>
+
+  <nav class="navbar scrolled" id="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="nav-logo">
+        <span class="logo-icon">📚</span>
+        <span class="logo-text">ALA<span class="accent">QUIZPEDIA</span></span>
+      </a>
+      <div class="nav-links" id="navLinks">
+        <a href="index.html" class="nav-link">← Back to Site</a>
+        <div class="nav-user" id="navUser">
+          <div class="user-menu" id="userMenuBtn">
+            <div class="user-avatar" id="userAvatar">A</div>
+            <span id="userDisplayName">Admin</span>
+            <span class="chevron">▾</span>
+          </div>
+          <div class="user-dropdown hidden" id="userDropdown">
+            <a href="#" class="dropdown-item" id="logoutBtn">↩ Logout</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <div class="admin-layout">
+    <aside class="admin-sidebar">
+      <div class="sidebar-label">Main</div>
+      <nav class="sidebar-nav">
+        <a href="admin.html" class="sidebar-link">📊 Dashboard</a>
+        <a href="admin-quizzes.html" class="sidebar-link active">📝 Manage Quizzes</a>
+        <a href="admin-quiz-edit.html" class="sidebar-link">➕ Create Quiz</a>
+        <a href="admin-images.html" class="sidebar-link">🖼 Manage Images</a>
+        <a href="admin-materials.html" class="sidebar-link">📖 Study Materials</a>
+        <a href="admin-users.html" class="sidebar-link">👥 Manage Users</a>
+        <a href="admin-data.html" class="sidebar-link">💾 Import/Export</a>
+      </nav>
+      <div class="sidebar-label" style="margin-top:1rem;">Navigation</div>
+      <nav class="sidebar-nav">
+        <a href="quizzes.html" class="sidebar-link">🎯 Browse Quizzes</a>
+        <a href="leaderboard.html" class="sidebar-link">🏆 Leaderboard</a>
+        <a href="index.html" class="sidebar-link">🏠 Homepage</a>
+      </nav>
+    </aside>
+
+    <main class="admin-main">
+      <div class="admin-page-header" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;">
+        <div>
+          <h1 class="admin-page-title">📝 Manage <span class="gradient-text">Quizzes</span></h1>
+          <p class="admin-page-sub">Create, edit and delete quizzes</p>
+        </div>
+        <div style="display:flex;gap:0.75rem;flex-wrap:wrap;">
+          <a href="admin-quiz-edit.html" class="btn btn-primary">➕ New Quiz</a>
+          <a href="admin-quiz-edit.html?generate=1" class="btn btn-success">🤖 Generate from Topic</a>
+        </div>
+      </div>
+
+      <div class="search-wrap" style="max-width:100%;margin-bottom:1.5rem;">
+        <span class="search-icon">🔍</span>
+        <input type="text" class="form-input search-input" id="searchInput" placeholder="Search quizzes..."/>
+      </div>
+
+      <div class="table-card">
+        <div style="overflow-x:auto;">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Title</th>
+                <th>Category</th>
+                <th>Questions</th>
+                <th>Difficulty</th>
+                <th>Time/Q</th>
+                <th>Created</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="quizTableBody">
+              <tr><td colspan="7" style="text-align:center;color:var(--text-muted);padding:3rem;">No quizzes yet. <a href="admin-quiz-edit.html" style="color:var(--accent-blue);">Create one →</a></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="js/storage.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    requireAdmin();
+    let allQuizzes = getAllQuizzes();
+    let searchTerm = '';
+
+    function render() {
+      const body = document.getElementById('quizTableBody');
+      const filtered = allQuizzes.filter(q =>
+        !searchTerm || q.title.toLowerCase().includes(searchTerm) || (q.category||'').toLowerCase().includes(searchTerm)
+      );
+      if (filtered.length === 0) {
+        body.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--text-muted);padding:3rem;">No quizzes match your search.</td></tr>';
+        return;
+      }
+      body.innerHTML = [...filtered].reverse().map(q => `
+        <tr>
+          <td>
+            <div style="font-weight:600;">${q.title}</div>
+            <div style="font-size:0.78rem;color:var(--text-muted);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${q.description||''}</div>
+          </td>
+          <td><span class="badge badge-blue">${q.category||'General'}</span></td>
+          <td style="font-weight:600;color:var(--accent-blue);">${(q.questions||[]).length}</td>
+          <td><span class="badge ${q.difficulty==='Easy'?'badge-green':q.difficulty==='Hard'?'badge-rose':'badge-amber'}">${q.difficulty||'Mixed'}</span></td>
+          <td style="color:var(--text-muted);">${q.timePerQuestion||30}s</td>
+          <td style="color:var(--text-muted);font-size:0.82rem;">${formatDate(q.createdAt)}</td>
+          <td>
+            <div class="action-btns">
+              <button class="btn btn-ghost btn-sm" onclick="openShareModal('${q.id}','${q.title.replace(/'/g,'\\\'')}')">🔗 Share</button>
+              <a href="admin-quiz-edit.html?id=${q.id}" class="btn btn-ghost btn-sm">✏️ Edit</a>
+              <button class="btn btn-danger btn-sm" onclick="delQuiz('${q.id}','${q.title.replace(/'/g,'\\\'') }')">🗑</button>
+            </div>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    document.getElementById('searchInput').addEventListener('input', e => {
+      searchTerm = e.target.value.toLowerCase().trim();
+      render();
+    });
+
+    function delQuiz(id, title) {
+      if (confirm(`Delete "${title}"? This will also remove all scores for this quiz.`)) {
+        deleteQuiz(id);
+        allQuizzes = getAllQuizzes();
+        showToast('Quiz deleted.', 'info');
+        render();
+      }
+    }
+
+    /* ---- Share Modal Link Generator ---- */
+    let currentShareId = '';
+
+    function openShareModal(id, title) {
+      currentShareId = id;
+      document.getElementById('shareQuizTitle').textContent = title;
+      document.getElementById('shareModal').classList.remove('hidden');
+      
+      // Reset inputs
+      document.getElementById('optNoTimer').checked = false;
+      document.getElementById('optFeedback').checked = true;
+      document.getElementById('optPlayerName').value = '';
+      
+      updateGeneratedUrl();
+    }
+
+    function closeShareModal() {
+      document.getElementById('shareModal').classList.add('hidden');
+    }
+
+    function updateGeneratedUrl() {
+      if (!currentShareId) return;
+      
+      let baseUrl = window.location.origin + window.location.pathname.replace('admin-quizzes.html', 'quiz-player.html');
+      // If running locally as file://
+      if (window.location.protocol === 'file:') {
+        baseUrl = window.location.href.replace('admin-quizzes.html', 'quiz-player.html');
+        // split query if any
+        baseUrl = baseUrl.split('?')[0];
+      }
+      
+      let url = `${baseUrl}?id=${currentShareId}`;
+      
+      if (document.getElementById('optNoTimer').checked) {
+        url += '&timer=off';
+      }
+      if (!document.getElementById('optFeedback').checked) {
+        url += '&feedback=off';
+      }
+      const player = document.getElementById('optPlayerName').value.trim();
+      if (player) {
+        url += `&player=${encodeURIComponent(player)}`;
+      }
+      
+      document.getElementById('generatedUrlInput').value = url;
+    }
+
+    function copyShareLink() {
+      const input = document.getElementById('generatedUrlInput');
+      input.select();
+      input.setSelectionRange(0, 99999);
+      navigator.clipboard.writeText(input.value).then(() => {
+        showToast('📋 Share link copied to clipboard!', 'success');
+      });
+    }
+
+    render();
+  </script>
+
+  <!-- Share URL Generator Modal -->
+  <div class="modal-overlay hidden" id="shareModal">
+    <div class="modal" style="max-width: 550px;">
+      <div class="modal-title">🔗 Share Quiz: <span id="shareQuizTitle" class="gradient-text"></span></div>
+      
+      <div style="display:flex; flex-direction:column; gap:1rem;">
+        
+        <!-- Customize Options -->
+        <div style="background:rgba(255,255,255,0.02); border:1px solid var(--border-color); border-radius:var(--radius-md); padding:1rem; display:flex; flex-direction:column; gap:0.75rem;">
+          <div style="font-weight:600; font-size:0.9rem; color:var(--accent-blue);">⚙ Customize Link Options</div>
+          
+          <label style="display:flex; align-items:center; gap:0.5rem; font-size:0.88rem; cursor:pointer;">
+            <input type="checkbox" id="optNoTimer" onchange="updateGeneratedUrl()"/> Disable Timer (unlimited time)
+          </label>
+          
+          <label style="display:flex; align-items:center; gap:0.5rem; font-size:0.88rem; cursor:pointer;">
+            <input type="checkbox" id="optFeedback" checked onchange="updateGeneratedUrl()"/> Show Correct Answer &amp; Explanations during Quiz
+          </label>
+          
+          <div class="form-group" style="margin-bottom:0; margin-top:0.25rem;">
+            <label class="form-label" style="font-size:0.8rem; margin-bottom:0.25rem;">Pre-set Player Nickname (Skip login/register)</label>
+            <input type="text" class="form-input" id="optPlayerName" placeholder="e.g. Guest Player" oninput="updateGeneratedUrl()" style="padding:0.5rem 0.75rem; font-size:0.88rem;"/>
+          </div>
+        </div>
+
+        <!-- Generated URL Output -->
+        <div class="form-group" style="margin-bottom:0;">
+          <label class="form-label">Generated Shareable Link</label>
+          <div style="display:flex; gap:0.5rem;">
+            <input type="text" class="form-input" id="generatedUrlInput" readonly style="font-size:0.85rem; background:rgba(0,0,0,0.25); color:var(--text-secondary);"/>
+            <button class="btn btn-primary" onclick="copyShareLink()">Copy</button>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn btn-ghost" onclick="closeShareModal()">Close</button>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

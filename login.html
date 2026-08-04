@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="description" content="Login or Register to ALA QUIZPEDIA — the ultimate quiz platform by A.SHAM SHARAN"/>
+  <title>Login | ALA QUIZPEDIA</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+  <div class="bg-orbs">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+  </div>
+
+  <nav class="navbar scrolled" id="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="nav-logo">
+        <span class="logo-icon">📚</span>
+        <span class="logo-text">ALA<span class="accent">QUIZPEDIA</span></span>
+      </a>
+      <div class="nav-links" id="navLinks">
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="quizzes.html" class="nav-link">Quizzes</a>
+        <a href="leaderboard.html" class="nav-link">Leaderboard</a>
+        <div class="nav-auth" id="navAuth">
+          <a href="login.html" class="btn btn-ghost">Login</a>
+          <a href="login.html#register" class="btn btn-primary">Sign Up</a>
+        </div>
+        <div class="nav-user hidden" id="navUser">
+          <div class="user-menu" id="userMenuBtn">
+            <div class="user-avatar" id="userAvatar">U</div>
+            <span id="userDisplayName">User</span>
+            <span class="chevron">▾</span>
+          </div>
+          <div class="user-dropdown hidden" id="userDropdown">
+            <a href="admin.html" class="dropdown-item admin-only hidden" id="adminLink">⚙ Admin Panel</a>
+            <a href="#" class="dropdown-item" id="logoutBtn">↩ Logout</a>
+          </div>
+        </div>
+      </div>
+      <button class="hamburger" id="hamburger">☰</button>
+    </div>
+  </nav>
+
+  <div class="auth-page">
+    <div class="auth-card">
+      <div style="text-align:center;margin-bottom:1.5rem;">
+        <div style="font-size:2.5rem;margin-bottom:0.5rem;">📚</div>
+        <div class="auth-title">ALA<span class="gradient-text">QUIZPEDIA</span></div>
+        <div class="auth-subtitle">The ultimate quiz platform by A.SHAM SHARAN</div>
+      </div>
+
+      <div class="auth-tabs">
+        <div class="auth-tab active" id="loginTab" onclick="switchTab('login')">Login</div>
+        <div class="auth-tab" id="registerTab" onclick="switchTab('register')">Register</div>
+      </div>
+
+      <!-- Login Form -->
+      <form id="loginForm">
+        <div class="form-group">
+          <label class="form-label">Username</label>
+          <input type="text" class="form-input" id="loginUsername" placeholder="admin or 1234-5678" required/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <input type="password" class="form-input" id="loginPassword" placeholder="Your password" required/>
+        </div>
+        <div class="form-group">
+          <label style="display:flex;align-items:center;gap:0.5rem;font-size:0.88rem;color:var(--text-secondary);cursor:pointer;">
+            <input type="checkbox" id="rememberMe"/> Remember me
+          </label>
+        </div>
+        <div id="loginError" class="form-error hidden"></div>
+        <button type="submit" class="btn btn-primary btn-full" style="margin-top:0.5rem;">Login →</button>
+      </form>
+
+      <!-- Register Form -->
+      <form id="registerForm" class="hidden">
+        <div class="form-group">
+          <label class="form-label">Display Name</label>
+          <input type="text" class="form-input" id="regDisplayName" placeholder="Your full name" required/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Username</label>
+          <input type="text" class="form-input" id="regUsername" placeholder="e.g. 1234-5678" required/>
+          <div class="form-hint">⚠️ Must be in format <strong>XXXX-XXXX</strong> (4 digits, dash, 4 digits). Only admin can approve accounts.</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <input type="password" class="form-input" id="regPassword" placeholder="Create a strong password" required oninput="checkPasswordStrength(this.value)"/>
+          <div id="pwStrength" style="margin-top:0.5rem;"></div>
+          <div class="form-hint">Must have 8+ chars, uppercase, lowercase, number &amp; special character.</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Confirm Password</label>
+          <input type="password" class="form-input" id="regConfirm" placeholder="Repeat password" required/>
+        </div>
+        <div id="registerError" class="form-error hidden"></div>
+        <button type="submit" class="btn btn-primary btn-full" style="margin-top:0.5rem;">Create Account →</button>
+      </form>
+
+      <div class="divider"></div>
+      <div style="text-align:center;font-size:0.82rem;color:var(--text-muted);">
+        © 2024 ALA QUIZPEDIA by A.SHAM SHARAN
+      </div>
+    </div>
+  </div>
+
+  <script src="js/storage.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    // Redirect if already logged in
+    if (getCurrentUser()) window.location.href = 'index.html';
+
+    // Switch to register tab if #register hash
+    if (window.location.hash === '#register') switchTab('register');
+
+    function switchTab(tab) {
+      document.getElementById('loginForm').classList.toggle('hidden', tab !== 'login');
+      document.getElementById('registerForm').classList.toggle('hidden', tab !== 'register');
+      document.getElementById('loginTab').classList.toggle('active', tab === 'login');
+      document.getElementById('registerTab').classList.toggle('active', tab === 'register');
+    }
+
+    function checkPasswordStrength(pw) {
+      const errors = validatePassword(pw);
+      const el = document.getElementById('pwStrength');
+      if (!pw) { el.innerHTML = ''; return; }
+      const pct = Math.round(((5 - errors.length) / 5) * 100);
+      const color = pct < 40 ? '#f43f5e' : pct < 80 ? '#f59e0b' : '#10b981';
+      const label = pct < 40 ? 'Weak' : pct < 80 ? 'Medium' : 'Strong';
+      el.innerHTML = `
+        <div style="height:4px;background:rgba(255,255,255,0.1);border-radius:2px;overflow:hidden;margin-bottom:4px;">
+          <div style="height:100%;width:${pct}%;background:${color};border-radius:2px;transition:all 0.3s;"></div>
+        </div>
+        <span style="font-size:0.78rem;color:${color};font-weight:600;">${label} password</span>
+      `;
+    }
+
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const username = document.getElementById('loginUsername').value.trim();
+      const password = document.getElementById('loginPassword').value;
+      const remember = document.getElementById('rememberMe').checked;
+      const result = loginUser(username, password);
+      const errEl = document.getElementById('loginError');
+      if (result.success) {
+        setCurrentUser(result.user, remember);
+        showToast('Welcome back, ' + (result.user.displayName || result.user.username) + '!', 'success');
+        setTimeout(() => {
+          window.location.href = result.user.role === 'admin' ? 'admin.html' : 'quizzes.html';
+        }, 800);
+      } else {
+        errEl.textContent = result.error;
+        errEl.classList.remove('hidden');
+      }
+    });
+
+    document.getElementById('registerForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const displayName = document.getElementById('regDisplayName').value.trim();
+      const username = document.getElementById('regUsername').value.trim();
+      const password = document.getElementById('regPassword').value;
+      const confirm = document.getElementById('regConfirm').value;
+      const errEl = document.getElementById('registerError');
+
+      if (password !== confirm) {
+        errEl.textContent = 'Passwords do not match';
+        errEl.classList.remove('hidden');
+        return;
+      }
+      const result = registerUser(username, password, displayName);
+      if (result.success) {
+        setCurrentUser(result.user, false);
+        showToast('Account created! Welcome to ALA QUIZPEDIA!', 'success');
+        setTimeout(() => window.location.href = 'quizzes.html', 900);
+      } else {
+        errEl.textContent = result.error;
+        errEl.classList.remove('hidden');
+      }
+    });
+  </script>
+</body>
+</html>

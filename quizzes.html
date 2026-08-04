@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="description" content="Browse all quizzes on ALA QUIZPEDIA — Science, History, Geography and more!"/>
+  <title>Quizzes | ALA QUIZPEDIA</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+  <div class="bg-orbs">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+  </div>
+
+  <nav class="navbar scrolled" id="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="nav-logo">
+        <span class="logo-icon">📚</span>
+        <span class="logo-text">ALA<span class="accent">QUIZPEDIA</span></span>
+      </a>
+      <div class="nav-links" id="navLinks">
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="quizzes.html" class="nav-link active">Quizzes</a>
+        <a href="leaderboard.html" class="nav-link">Leaderboard</a>
+        <div class="nav-auth" id="navAuth">
+          <a href="login.html" class="btn btn-ghost">Login</a>
+          <a href="login.html#register" class="btn btn-primary">Sign Up</a>
+        </div>
+        <div class="nav-user hidden" id="navUser">
+          <div class="user-menu" id="userMenuBtn">
+            <div class="user-avatar" id="userAvatar">U</div>
+            <span id="userDisplayName">User</span>
+            <span class="chevron">▾</span>
+          </div>
+          <div class="user-dropdown hidden" id="userDropdown">
+            <a href="admin.html" class="dropdown-item admin-only hidden" id="adminLink">⚙ Admin Panel</a>
+            <a href="#" class="dropdown-item" id="logoutBtn">↩ Logout</a>
+          </div>
+        </div>
+      </div>
+      <button class="hamburger" id="hamburger">☰</button>
+    </div>
+  </nav>
+
+  <div class="page-wrap">
+    <div class="page-header">
+      <h1 class="page-title">Browse <span class="gradient-text">Quizzes</span></h1>
+      <p class="page-sub">Pick a quiz and challenge yourself!</p>
+    </div>
+
+    <!-- Search -->
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input type="text" class="form-input search-input" id="searchInput" placeholder="Search quizzes..."/>
+    </div>
+
+    <!-- Category filters -->
+    <div class="filter-bar" id="filterBar">
+      <button class="filter-btn active" data-cat="all">All</button>
+      <button class="filter-btn" data-cat="science">🔬 Science</button>
+      <button class="filter-btn" data-cat="history">📜 History</button>
+      <button class="filter-btn" data-cat="geography">🌍 Geography</button>
+      <button class="filter-btn" data-cat="sports">⚽ Sports</button>
+      <button class="filter-btn" data-cat="technology">💻 Technology</button>
+      <button class="filter-btn" data-cat="general">🧠 General</button>
+    </div>
+
+    <div class="quiz-grid" id="quizGrid">
+      <div class="empty-state" id="emptyState">
+        No quizzes available yet.<br/>
+        <span id="adminHint"></span>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-bottom">
+        <p>© 2024 ALA QUIZPEDIA by A.SHAM SHARAN. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/storage.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    // Show admin hint
+    if (isAdmin()) {
+      document.getElementById('adminHint').innerHTML = '<a href="admin-quiz-edit.html">Create your first quiz in the Admin Panel →</a>';
+    }
+
+    let allQuizzes = getAllQuizzes();
+    let activeFilter = 'all';
+    let searchTerm = '';
+
+    function renderGrid() {
+      const grid = document.getElementById('quizGrid');
+      let filtered = allQuizzes.filter(q => {
+        const matchCat = activeFilter === 'all' || (q.category||'').toLowerCase() === activeFilter;
+        const matchSearch = !searchTerm || q.title.toLowerCase().includes(searchTerm) || (q.description||'').toLowerCase().includes(searchTerm);
+        return matchCat && matchSearch;
+      });
+
+      if (filtered.length === 0) {
+        grid.innerHTML = '<div class="empty-state">No quizzes found for this filter.</div>';
+        return;
+      }
+      document.getElementById('emptyState') && document.getElementById('emptyState').remove();
+      grid.innerHTML = filtered.map(q => renderQuizCard(q)).join('');
+    }
+
+    // Filter buttons
+    document.getElementById('filterBar').addEventListener('click', e => {
+      const btn = e.target.closest('.filter-btn');
+      if (!btn) return;
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      activeFilter = btn.dataset.cat;
+      renderGrid();
+    });
+
+    // Search
+    document.getElementById('searchInput').addEventListener('input', e => {
+      searchTerm = e.target.value.toLowerCase().trim();
+      renderGrid();
+    });
+
+    renderGrid();
+  </script>
+</body>
+</html>

@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Quiz Editor | ALA QUIZPEDIA Admin</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="css/style.css"/>
+  <style>
+    .gen-box {
+      background: linear-gradient(135deg, rgba(99,102,241,0.08), rgba(139,92,246,0.08));
+      border: 1px solid rgba(99,102,241,0.25);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    .gen-box h3 { font-family:'Outfit',sans-serif; font-size:1.1rem; font-weight:700; margin-bottom:0.5rem; }
+    .gen-row { display:flex; gap:0.75rem; flex-wrap:wrap; align-items:flex-end; }
+    .gen-row .form-group { flex:1; min-width:200px; margin-bottom:0; }
+    .spinner {
+      display:inline-block; width:18px; height:18px;
+      border:2px solid rgba(255,255,255,0.3); border-top-color:#fff;
+      border-radius:50%; animation:spin 0.7s linear infinite;
+    }
+    @keyframes spin { to { transform:rotate(360deg); } }
+    .q-editor-wrap { display:flex; flex-direction:column; gap:1rem; }
+    .add-q-bar { display:flex; gap:0.75rem; flex-wrap:wrap; margin-bottom:1rem; }
+    .drag-hint { font-size:0.78rem; color:var(--text-muted); margin-bottom:0.75rem; }
+  </style>
+</head>
+<body>
+  <div class="bg-orbs"><div class="orb orb-1"></div><div class="orb orb-3"></div></div>
+
+  <nav class="navbar scrolled" id="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="nav-logo">
+        <span class="logo-icon">📚</span>
+        <span class="logo-text">ALA<span class="accent">QUIZPEDIA</span></span>
+      </a>
+      <div class="nav-links" id="navLinks">
+        <a href="admin-quizzes.html" class="nav-link">← Back to Quizzes</a>
+        <div class="nav-user" id="navUser">
+          <div class="user-menu" id="userMenuBtn">
+            <div class="user-avatar" id="userAvatar">A</div>
+            <span id="userDisplayName">Admin</span>
+            <span class="chevron">▾</span>
+          </div>
+          <div class="user-dropdown hidden" id="userDropdown">
+            <a href="#" class="dropdown-item" id="logoutBtn">↩ Logout</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <div class="admin-layout">
+    <aside class="admin-sidebar">
+      <div class="sidebar-label">Main</div>
+      <nav class="sidebar-nav">
+        <a href="admin.html" class="sidebar-link">📊 Dashboard</a>
+        <a href="admin-quizzes.html" class="sidebar-link">📝 Manage Quizzes</a>
+        <a href="admin-quiz-edit.html" class="sidebar-link active">➕ Create Quiz</a>
+        <a href="admin-images.html" class="sidebar-link">🖼 Manage Images</a>
+        <a href="admin-materials.html" class="sidebar-link">📖 Study Materials</a>
+        <a href="admin-users.html" class="sidebar-link">👥 Manage Users</a>
+        <a href="admin-data.html" class="sidebar-link">💾 Import/Export</a>
+      </nav>
+      <div class="sidebar-label" style="margin-top:1rem;">Navigation</div>
+      <nav class="sidebar-nav">
+        <a href="quizzes.html" class="sidebar-link">🎯 Browse Quizzes</a>
+        <a href="leaderboard.html" class="sidebar-link">🏆 Leaderboard</a>
+        <a href="index.html" class="sidebar-link">🏠 Homepage</a>
+      </nav>
+    </aside>
+
+    <main class="admin-main">
+      <div class="admin-page-header">
+        <h1 class="admin-page-title" id="pageTitle">➕ Create <span class="gradient-text">New Quiz</span></h1>
+        <p class="admin-page-sub">Fill in the details or generate questions from a topic name</p>
+      </div>
+
+      <!-- 🤖 TOPIC GENERATOR BOX -->
+      <div class="gen-box">
+        <h3>🤖 Auto-Generate Questions from a Topic</h3>
+        <p style="font-size:0.88rem;color:var(--text-secondary);margin-bottom:1rem;">
+          Type any topic name (e.g. <em>History</em>, <em>Science</em>, <em>Geography</em>, <em>India</em>, <em>Space</em>, <em>Football</em>) and click <strong>Generate</strong> — questions are fetched from Open Trivia DB and Wikipedia automatically!
+        </p>
+        <div style="background:rgba(255,255,255,0.02); border:1px solid var(--border-color); border-radius:var(--radius-md); padding:1rem; margin-bottom:1rem;">
+          <div class="form-group" style="margin-bottom:0;">
+            <label class="form-label" style="font-size:0.82rem; margin-bottom:0.25rem;">Google Gemini API Key (Optional — unlocks advanced AI generation)</label>
+            <div style="display:flex; gap:0.5rem;">
+              <input type="password" class="form-input" id="geminiApiKey" placeholder="AIzaSy..." style="font-size:0.88rem; padding:0.5rem 0.75rem; flex:1;"/>
+              <button class="btn btn-ghost" onclick="saveGeminiKey()" style="padding:0.5rem 1rem; font-size:0.88rem;">Save Key</button>
+            </div>
+            <div class="form-hint" style="font-size:0.75rem;">Key is stored locally in your browser. Get a free key from <a href="https://aistudio.google.com/" target="_blank" style="color:var(--accent-blue); text-decoration:underline;">Google AI Studio</a>.</div>
+          </div>
+        </div>
+        <div class="gen-row">
+          <div class="form-group">
+            <label class="form-label">Topic Name</label>
+            <input type="text" class="form-input" id="topicInput" placeholder="e.g. Space, History, Science, Cricket..."/>
+          </div>
+          <div class="form-group" style="min-width:130px;max-width:160px;">
+            <label class="form-label">No. of Questions</label>
+            <select class="form-select" id="genCount">
+              <option value="5">5</option>
+              <option value="10" selected>10</option>
+              <option value="15">15</option>
+              <option value="20">20</option>
+            </select>
+          </div>
+          <div style="padding-bottom:1px;">
+            <button class="btn btn-success" id="generateBtn" onclick="generateFromTopic()">
+              <span id="genBtnText">🤖 Generate</span>
+            </button>
+          </div>
+        </div>
+        <div id="genStatus" style="margin-top:0.75rem;font-size:0.85rem;color:var(--text-muted);"></div>
+      </div>
+
+      <!-- Quiz Metadata -->
+      <div class="table-card" style="margin-bottom:1.5rem;">
+        <div class="table-header"><span class="table-title">📋 Quiz Details</span></div>
+        <div style="padding:1.5rem;">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+            <div class="form-group" style="grid-column:1/-1;">
+              <label class="form-label">Quiz Title *</label>
+              <input type="text" class="form-input" id="quizTitle" placeholder="e.g. World Geography Challenge" required/>
+            </div>
+            <div class="form-group" style="grid-column:1/-1;">
+              <label class="form-label">Description</label>
+              <textarea class="form-textarea" id="quizDesc" placeholder="Short description of this quiz..." rows="2"></textarea>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Category</label>
+              <select class="form-select" id="quizCategory">
+                <option value="General">General</option>
+                <option value="Science">Science</option>
+                <option value="History">History</option>
+                <option value="Geography">Geography</option>
+                <option value="Sports">Sports</option>
+                <option value="Technology">Technology</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Difficulty</label>
+              <select class="form-select" id="quizDifficulty">
+                <option value="Easy">Easy</option>
+                <option value="Medium" selected>Medium</option>
+                <option value="Hard">Hard</option>
+                <option value="Mixed">Mixed</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Time Per Question (seconds)</label>
+              <input type="number" class="form-input" id="timePerQ" value="30" min="5" max="120"/>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Quiz Cover Image (Optional)</label>
+              <select class="form-select" id="quizCoverImage" onchange="previewQuizCover()">
+                <option value="">No Cover Image</option>
+              </select>
+              <div id="quizCoverPreview" style="margin-top:0.5rem; max-width:200px; display:none;">
+                <img id="quizCoverImgEl" src="" style="width:100%; height:auto; border-radius:8px; border:1px solid var(--border-color);" alt="Cover Preview"/>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Questions Editor -->
+      <div class="table-card" style="margin-bottom:1.5rem;">
+        <div class="table-header">
+          <span class="table-title">❓ Questions (<span id="qCount">0</span>)</span>
+        </div>
+        <div style="padding:1.5rem;">
+          <div class="add-q-bar">
+            <button class="btn btn-ghost btn-sm" onclick="addQuestion('mcq')">➕ Multiple Choice</button>
+            <button class="btn btn-ghost btn-sm" onclick="addQuestion('truefalse')">➕ True / False</button>
+            <button class="btn btn-ghost btn-sm" onclick="addQuestion('fillinblank')">➕ Fill in Blank</button>
+          </div>
+          <div class="drag-hint">💡 Click the buttons above to add questions manually, or use the generator above to auto-fill.</div>
+          <div class="q-editor-wrap" id="qEditorWrap">
+            <div id="noQMsg" style="text-align:center;padding:2rem;color:var(--text-muted);">No questions yet. Add manually or generate from a topic.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Save Bar -->
+      <div style="display:flex;gap:1rem;justify-content:flex-end;flex-wrap:wrap;">
+        <a href="admin-quizzes.html" class="btn btn-ghost">Cancel</a>
+        <button class="btn btn-primary" onclick="saveQuizForm()">💾 Save Quiz</button>
+      </div>
+    </main>
+  </div>
+
+  <script src="js/storage.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/quiz-generator.js"></script>
+  <script>
+    requireAdmin();
+
+    const params = new URLSearchParams(window.location.search);
+    const editId = params.get('id');
+    const autoGenerate = params.get('generate');
+    let questions = [];
+    let editingQuiz = null;
+
+    // Load Gemini Key from localStorage
+    const savedKey = localStorage.getItem('gemini_api_key');
+    if (savedKey) {
+      document.getElementById('geminiApiKey').value = savedKey;
+    }
+
+    // Populate Cover Image dropdown
+    populateImageSelects();
+
+    // Load existing quiz if editing
+    if (editId) {
+      editingQuiz = getQuizById(editId);
+      if (editingQuiz) {
+        document.getElementById('pageTitle').innerHTML = '✏️ Edit <span class="gradient-text">Quiz</span>';
+        document.getElementById('quizTitle').value = editingQuiz.title;
+        document.getElementById('quizDesc').value = editingQuiz.description || '';
+        document.getElementById('quizCategory').value = editingQuiz.category || 'General';
+        document.getElementById('quizDifficulty').value = editingQuiz.difficulty || 'Medium';
+        document.getElementById('timePerQ').value = editingQuiz.timePerQuestion || 30;
+        if (editingQuiz.imageId) {
+          document.getElementById('quizCoverImage').value = editingQuiz.imageId;
+          previewQuizCover();
+        }
+        questions = [...(editingQuiz.questions || [])];
+        renderAllQuestions();
+      }
+    }
+
+    // Auto-focus generate if ?generate=1
+    if (autoGenerate) {
+      document.getElementById('topicInput').focus();
+      showToast('Type a topic name and click Generate!', 'info', 4000);
+    }
+
+    /* ---- Topic Generator ---- */
+    async function generateFromTopic() {
+      const topic = document.getElementById('topicInput').value.trim();
+      if (!topic) { showToast('Please enter a topic name!', 'error'); return; }
+
+      const count = parseInt(document.getElementById('genCount').value);
+      const btn = document.getElementById('generateBtn');
+      const btnText = document.getElementById('genBtnText');
+      const statusEl = document.getElementById('genStatus');
+
+      btn.disabled = true;
+      btnText.innerHTML = '<span class="spinner"></span> Generating...';
+      statusEl.innerHTML = '🔍 Searching Open Trivia DB and Wikipedia for <strong>' + topic + '</strong>...';
+
+      try {
+        const generated = await generateQuestionsFromTopic(topic, count);
+
+        if (generated.length === 0) {
+          statusEl.innerHTML = '⚠️ Could not generate questions for this topic. Try a different topic.';
+          showToast('No questions generated. Try a different topic.', 'error');
+        } else {
+          // Auto-fill quiz title/category if empty
+          if (!document.getElementById('quizTitle').value) {
+            document.getElementById('quizTitle').value = topic.charAt(0).toUpperCase() + topic.slice(1) + ' Quiz';
+          }
+          // Auto-detect category
+          const topicLower = topic.toLowerCase();
+          const catMap = { science:['science','biology','physics','chemistry','nature'], history:['history','historical'], geography:['geography','countries','capitals','world'], sports:['sports','sport','football','cricket','tennis','basketball'], technology:['technology','computers','programming','coding','tech'], general:['general'] };
+          for (const [cat, keys] of Object.entries(catMap)) {
+            if (keys.some(k => topicLower.includes(k))) {
+              document.getElementById('quizCategory').value = cat.charAt(0).toUpperCase()+cat.slice(1);
+              break;
+            }
+          }
+
+          // Add to existing questions
+          questions = [...questions, ...generated];
+          renderAllQuestions();
+          statusEl.innerHTML = `✅ Generated <strong>${generated.length} questions</strong> from "${topic}"! Review and edit them below.`;
+          showToast(`✅ ${generated.length} questions generated!`, 'success');
+          document.getElementById('qEditorWrap').scrollIntoView({ behavior:'smooth', block:'start' });
+        }
+      } catch(err) {
+        statusEl.innerHTML = '❌ Error: ' + err.message;
+        showToast('Generation failed. Check your internet connection.', 'error');
+      } finally {
+        btn.disabled = false;
+        btnText.innerHTML = '🤖 Generate More';
+      }
+    }
+
+    // Also trigger on Enter key
+    document.getElementById('topicInput').addEventListener('keydown', e => {
+      if (e.key === 'Enter') generateFromTopic();
+    });
+
+    /* ---- Question Renderers ---- */
+    function renderAllQuestions() {
+      const wrap = document.getElementById('qEditorWrap');
+      const noMsg = document.getElementById('noQMsg');
+      if (noMsg) noMsg.remove();
+      document.getElementById('qCount').textContent = questions.length;
+
+      if (questions.length === 0) {
+        wrap.innerHTML = '<div id="noQMsg" style="text-align:center;padding:2rem;color:var(--text-muted);">No questions yet. Add manually or generate from a topic.</div>';
+        return;
+      }
+
+      wrap.innerHTML = questions.map((q, i) => renderQuestionEditor(q, i)).join('');
+    }
+
+    function renderQuestionEditor(q, i) {
+      const typeLabels = { mcq: 'Multiple Choice', truefalse: 'True / False', fillinblank: 'Fill in the Blank' };
+      let optionsHtml = '';
+
+      if (q.type === 'mcq') {
+        const opts = (q.options && q.options.length >= 4) ? q.options : ['','','',''];
+        optionsHtml = `
+          <div style="margin-bottom:0.75rem;font-size:0.82rem;color:var(--text-muted);">Options (radio = correct answer):</div>
+          ${opts.map((opt,oi)=>`
+            <div class="option-row">
+              <input type="radio" class="correct-radio" name="correct_${i}" value="${oi}" ${q.correctAnswer === opt && opt ? 'checked' : ''} onchange="updateCorrectByIndex(${i},${oi})"/>
+              <input type="text" class="form-input" style="flex:1;" placeholder="Option ${String.fromCharCode(65+oi)}" value="${escVal(opt)}" oninput="updateOption(${i},${oi},this.value)"/>
+            </div>
+          `).join('')}
+        `;
+      } else if (q.type === 'truefalse') {
+        optionsHtml = `
+          <div style="margin-bottom:0.5rem;font-size:0.82rem;color:var(--text-muted);">Correct Answer:</div>
+          <div style="display:flex;gap:1rem;">
+            <label style="display:flex;align-items:center;gap:0.4rem;cursor:pointer;font-size:0.9rem;">
+              <input type="radio" name="tf_${i}" value="True" ${q.correctAnswer==='True'?'checked':''} onchange="updateCorrectAnswer(${i},'True')"/> True
+            </label>
+            <label style="display:flex;align-items:center;gap:0.4rem;cursor:pointer;font-size:0.9rem;">
+              <input type="radio" name="tf_${i}" value="False" ${q.correctAnswer==='False'?'checked':''} onchange="updateCorrectAnswer(${i},'False')"/> False
+            </label>
+          </div>
+        `;
+      } else {
+        optionsHtml = `
+          <div class="form-group" style="margin-bottom:0;">
+            <label class="form-label">Correct Answer</label>
+            <input type="text" class="form-input" placeholder="The answer to fill in" value="${escVal(q.correctAnswer)}" oninput="updateCorrectAnswer(${i},this.value)"/>
+          </div>
+        `;
+      }
+
+      const images = getImages();
+      let imgSelectHtml = `
+        <div class="form-group" style="margin-top:0.75rem;">
+          <label class="form-label">Question Image (Optional)</label>
+          <select class="form-select" onchange="updateQuestionImage(${i}, this.value)">
+            <option value="">No Image</option>
+            ${images.map(img => `<option value="${img.id}" ${q.imageId === img.id ? 'selected' : ''}>${img.name}</option>`).join('')}
+          </select>
+          <div id="qImgPreview_${i}" style="margin-top:0.5rem; max-width:150px; display:${q.imageId ? 'block' : 'none'};">
+            <img src="${q.imageId ? (images.find(im=>im.id===q.imageId)||{data:''}).data : ''}" style="width:100%; height:auto; border-radius:6px; border:1px solid var(--border-color);" alt="Question Preview"/>
+          </div>
+        </div>
+      `;
+
+      return `
+        <div class="question-editor" id="qed_${i}" style="animation:fadeSlideIn 0.3s ease;">
+          <div class="q-editor-header">
+            <span class="q-editor-num">Q${i+1} — <span class="badge badge-blue" style="font-size:0.75rem;">${typeLabels[q.type]||q.type}</span></span>
+            <div style="display:flex;gap:0.5rem;">
+              ${i > 0 ? `<button class="btn btn-ghost btn-sm" onclick="moveQ(${i},-1)" title="Move up">↑</button>` : ''}
+              ${i < questions.length-1 ? `<button class="btn btn-ghost btn-sm" onclick="moveQ(${i},1)" title="Move down">↓</button>` : ''}
+              <button class="btn btn-danger btn-sm" onclick="removeQ(${i})">🗑 Remove</button>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Question Text *</label>
+            <textarea class="form-textarea" rows="2" placeholder="Enter your question here..." oninput="updateQText(${i},this.value)">${escVal(q.questionText)}</textarea>
+          </div>
+          <div id="opts_${i}">${optionsHtml}</div>
+          ${imgSelectHtml}
+          <div class="form-group" style="margin-top:0.75rem;margin-bottom:0;">
+            <label class="form-label">Explanation (optional)</label>
+            <input type="text" class="form-input" placeholder="Explain the correct answer..." value="${escVal(q.explanation)}" oninput="updateExplanation(${i},this.value)"/>
+          </div>
+        </div>
+      `;
+    }
+
+    function escVal(s) { return (s||'').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
+
+    function addQuestion(type) {
+      const newQ = { id: genId('q'), type, questionText: '', options: type==='mcq'?['','','','']:[], correctAnswer: type==='truefalse'?'True':'', explanation: '' };
+      questions.push(newQ);
+      renderAllQuestions();
+      // Scroll to last
+      setTimeout(() => {
+        const last = document.getElementById(`qed_${questions.length-1}`);
+        if (last) last.scrollIntoView({ behavior:'smooth', block:'center' });
+      }, 100);
+    }
+
+    function removeQ(i) {
+      questions.splice(i, 1);
+      renderAllQuestions();
+    }
+
+    function moveQ(i, dir) {
+      const j = i + dir;
+      if (j < 0 || j >= questions.length) return;
+      [questions[i], questions[j]] = [questions[j], questions[i]];
+      renderAllQuestions();
+    }
+
+    function updateQText(i, val) { questions[i].questionText = val; document.getElementById('qCount').textContent = questions.length; }
+    function updateOption(i, oi, val) {
+      if (!questions[i].options) questions[i].options = ['','','',''];
+      questions[i].options[oi] = val;
+    }
+    function updateCorrectByIndex(i, oi) { questions[i].correctAnswer = questions[i].options[oi]; }
+    function updateCorrectAnswer(i, val) { questions[i].correctAnswer = val; }
+    function updateExplanation(i, val) { questions[i].explanation = val; }
+
+    /* ---- Save Quiz ---- */
+    function saveQuizForm() {
+      const title = document.getElementById('quizTitle').value.trim();
+      if (!title) { showToast('Please enter a quiz title!', 'error'); document.getElementById('quizTitle').focus(); return; }
+      if (questions.length === 0) { showToast('Please add at least one question!', 'error'); return; }
+
+      // Validate questions
+      for (let i = 0; i < questions.length; i++) {
+        if (!questions[i].questionText.trim()) { showToast(`Question ${i+1} has no text!`, 'error'); return; }
+        if (questions[i].type === 'mcq' && (!questions[i].correctAnswer || questions[i].options.some(o=>!o.trim()))) {
+          showToast(`Question ${i+1}: fill all options and select the correct answer.`, 'error'); return;
+        }
+        if (!questions[i].correctAnswer) { showToast(`Question ${i+1}: set the correct answer.`, 'error'); return; }
+      }
+
+      const quiz = {
+        id: editId || genId('quiz'),
+        title,
+        description: document.getElementById('quizDesc').value.trim(),
+        category: document.getElementById('quizCategory').value,
+        difficulty: document.getElementById('quizDifficulty').value,
+        timePerQuestion: parseInt(document.getElementById('timePerQ').value) || 30,
+        questions,
+        createdAt: editingQuiz ? editingQuiz.createdAt : new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      };
+
+      saveQuiz(quiz);
+      showToast(editId ? '✅ Quiz updated!' : '✅ Quiz created!', 'success');
+      setTimeout(() => window.location.href = 'admin-quizzes.html', 900);
+    }
+  </script>
+</body>
+</html>
