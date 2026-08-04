@@ -1,0 +1,352 @@
+[
+  {
+    "id": "first_quiz",
+    "title": "First Quiz",
+    "description": "Complete any quiz",
+    "repeatable": false,
+    "icon": "🎯"
+  },
+  {
+    "id": "quiz_5",
+    "title": "Quiz Novice",
+    "description": "Complete 5 quizzes",
+    "repeatable": false,
+    "icon": "🌱"
+  },
+  {
+    "id": "quiz_10",
+    "title": "Quiz Apprentice",
+    "description": "Complete 10 quizzes",
+    "repeatable": false,
+    "icon": "🐣"
+  },
+  {
+    "id": "quiz_20",
+    "title": "Quiz Expert",
+    "description": "Complete 20 quizzes",
+    "repeatable": false,
+    "icon": "🎓"
+  },
+  {
+    "id": "quiz_30",
+    "title": "Quiz Pro",
+    "description": "Complete 30 quizzes",
+    "repeatable": false,
+    "icon": "🌟"
+  },
+  {
+    "id": "quiz_50",
+    "title": "Quiz Master",
+    "description": "Complete 50 quizzes",
+    "repeatable": false,
+    "icon": "🏅"
+  },
+  {
+    "id": "quiz_100",
+    "title": "Quiz Legend",
+    "description": "Complete 100 quizzes",
+    "repeatable": false,
+    "icon": "🥇"
+  },
+  {
+    "id": "quiz_250",
+    "title": "Quiz Grandmaster",
+    "description": "Complete 250 quizzes",
+    "repeatable": false,
+    "icon": "👑"
+  },
+  {
+    "id": "quiz_500",
+    "title": "Quiz Immortal",
+    "description": "Complete 500 quizzes",
+    "repeatable": false,
+    "icon": "💎"
+  },
+  {
+    "id": "quiz_1000",
+    "title": "Quiz Deity",
+    "description": "Complete 1,000 quizzes",
+    "repeatable": false,
+    "icon": "⚡"
+  },
+  {
+    "id": "high_score_80",
+    "title": "High Scorer (80%)",
+    "description": "Score ≥ 80% on a quiz",
+    "repeatable": true,
+    "icon": "🎯"
+  },
+  {
+    "id": "high_score_90",
+    "title": "High Scorer (90%)",
+    "description": "Score ≥ 90% on a quiz",
+    "repeatable": true,
+    "icon": "⭐"
+  },
+  {
+    "id": "high_score_95",
+    "title": "High Scorer (95%)",
+    "description": "Score ≥ 95% on a quiz",
+    "repeatable": true,
+    "icon": "🌟"
+  },
+  {
+    "id": "perfect_score",
+    "title": "Perfect Score",
+    "description": "100% on a quiz",
+    "repeatable": true,
+    "icon": "💯"
+  },
+  {
+    "id": "fast_finish",
+    "title": "Speed Runner",
+    "description": "Finish a quiz in ≤ 50% of allocated time",
+    "repeatable": true,
+    "icon": "🚀"
+  },
+  {
+    "id": "accuracy_70",
+    "title": "Accurate (70%)",
+    "description": "Answer ≥ 70% correctly",
+    "repeatable": true,
+    "icon": "🏹"
+  },
+  {
+    "id": "accuracy_85",
+    "title": "Accurate (85%)",
+    "description": "Answer ≥ 85% correctly",
+    "repeatable": true,
+    "icon": "🎯"
+  },
+  {
+    "id": "accuracy_99",
+    "title": "Near‑Perfect",
+    "description": "Answer ≥ 99% correctly",
+    "repeatable": true,
+    "icon": "👁️"
+  },
+  {
+    "id": "no_wrong",
+    "title": "Zero Mistakes",
+    "description": "Complete a quiz with no wrong answers",
+    "repeatable": true,
+    "icon": "✨"
+  },
+  {
+    "id": "quick_correct",
+    "title": "Lightning Reflex",
+    "description": "Answer a question correctly within 5 seconds",
+    "repeatable": true,
+    "icon": "⚡"
+  },
+  {
+    "id": "streak_3",
+    "title": "3‑Day Streak",
+    "description": "Play quizzes on 3 consecutive days",
+    "repeatable": true,
+    "icon": "🔥"
+  },
+  {
+    "id": "streak_7",
+    "title": "7‑Day Streak",
+    "description": "Play quizzes on 7 consecutive days",
+    "repeatable": true,
+    "icon": "💥"
+  },
+  {
+    "id": "streak_14",
+    "title": "14‑Day Streak",
+    "description": "Play quizzes on 14 consecutive days",
+    "repeatable": true,
+    "icon": "🌋"
+  },
+  {
+    "id": "streak_30",
+    "title": "30‑Day Streak",
+    "description": "Play quizzes on 30 consecutive days",
+    "repeatable": true,
+    "icon": "🎆"
+  },
+  {
+    "id": "daily_quiz_15",
+    "title": "Daily Player (15)",
+    "description": "Complete a quiz on 15 distinct days",
+    "repeatable": false,
+    "icon": "📅"
+  },
+  {
+    "id": "daily_quiz_30",
+    "title": "Daily Player (30)",
+    "description": "Complete a quiz on 30 distinct days",
+    "repeatable": false,
+    "icon": "🗓️"
+  },
+  {
+    "id": "daily_quiz_60",
+    "title": "Daily Player (60)",
+    "description": "Complete a quiz on 60 distinct days",
+    "repeatable": false,
+    "icon": "🏆"
+  },
+  {
+    "id": "topic_explorer_5",
+    "title": "Topic Explorer (5)",
+    "description": "Complete quizzes in 5 different categories",
+    "repeatable": false,
+    "icon": "🧭"
+  },
+  {
+    "id": "topic_explorer_10",
+    "title": "Topic Explorer (10)",
+    "description": "Complete quizzes in 10 different categories",
+    "repeatable": false,
+    "icon": "🗺️"
+  },
+  {
+    "id": "science_master",
+    "title": "Science Buff",
+    "description": "Complete 10 Science quizzes",
+    "repeatable": false,
+    "icon": "🧪"
+  },
+  {
+    "id": "history_master",
+    "title": "History Buff",
+    "description": "Complete 10 History quizzes",
+    "repeatable": false,
+    "icon": "📜"
+  },
+  {
+    "id": "math_master",
+    "title": "Math Buff",
+    "description": "Complete 10 Math quizzes",
+    "repeatable": false,
+    "icon": "📐"
+  },
+  {
+    "id": "literature_master",
+    "title": "Literature Buff",
+    "description": "Complete 10 Literature quizzes",
+    "repeatable": false,
+    "icon": "📚"
+  },
+  {
+    "id": "geography_master",
+    "title": "Geography Buff",
+    "description": "Complete 10 Geography quizzes",
+    "repeatable": false,
+    "icon": "🌍"
+  },
+  {
+    "id": "tech_master",
+    "title": "Tech Buff",
+    "description": "Complete 10 Technology quizzes",
+    "repeatable": false,
+    "icon": "💻"
+  },
+  {
+    "id": "creator",
+    "title": "Quiz Creator",
+    "description": "Add a new quiz",
+    "repeatable": false,
+    "icon": "✏️"
+  },
+  {
+    "id": "contributor_5",
+    "title": "Contributor (5)",
+    "description": "Add ≥ 5 quizzes",
+    "repeatable": false,
+    "icon": "✍️"
+  },
+  {
+    "id": "contributor_20",
+    "title": "Contributor (20)",
+    "description": "Add ≥ 20 quizzes",
+    "repeatable": false,
+    "icon": "🛠️"
+  },
+  {
+    "id": "contributor_100",
+    "title": "Contributor (100)",
+    "description": "Add ≥ 100 quizzes",
+    "repeatable": false,
+    "icon": "🏗️"
+  },
+  {
+    "id": "reviewer",
+    "title": "Peer Reviewer",
+    "description": "Edit a quiz you didn't create",
+    "repeatable": false,
+    "icon": "🔍"
+  },
+  {
+    "id": "admin",
+    "title": "Administrator",
+    "description": "User role = admin",
+    "repeatable": false,
+    "icon": "⚙️"
+  },
+  {
+    "id": "leaderboard_top10",
+    "title": "Top‑10 Challenger",
+    "description": "Appear in top 10 of leaderboard",
+    "repeatable": false,
+    "icon": "🏅"
+  },
+  {
+    "id": "leaderboard_top3",
+    "title": "Top‑3 Challenger",
+    "description": "Appear in top 3 of leaderboard",
+    "repeatable": false,
+    "icon": "🥉"
+  },
+  {
+    "id": "leaderboard_top1",
+    "title": "Champion",
+    "description": "Reach rank 1 on leaderboard",
+    "repeatable": false,
+    "icon": "👑"
+  },
+  {
+    "id": "marathon_5",
+    "title": "Quiz Marathon (5)",
+    "description": "Finish 5 quizzes in a single session",
+    "repeatable": false,
+    "icon": "🏃"
+  },
+  {
+    "id": "marathon_10",
+    "title": "Quiz Marathon (10)",
+    "description": "Finish 10 quizzes in a single session",
+    "repeatable": false,
+    "icon": "🚴"
+  },
+  {
+    "id": "social_sharer",
+    "title": "Social Sharer",
+    "description": "Share a quiz via social button",
+    "repeatable": false,
+    "icon": "📢"
+  },
+  {
+    "id": "friend_challenger",
+    "title": "Friend Challenger",
+    "description": "Invite a friend who completes a quiz",
+    "repeatable": false,
+    "icon": "🤝"
+  },
+  {
+    "id": "event_participant",
+    "title": "Event Participant",
+    "description": "Play a quiz during a special event",
+    "repeatable": false,
+    "icon": "🎉"
+  },
+  {
+    "id": "beta_tester",
+    "title": "Beta Tester",
+    "description": "Use the site during its first 30 days",
+    "repeatable": false,
+    "icon": "🧪"
+  }
+]
