@@ -1,0 +1,67 @@
+.container {
+  max-width: 400px;
+  margin: 2rem auto;
+  padding: 1.5rem;
+  background: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(10px);
+  border-radius: 1rem;
+  box-shadow: 0 8px 32px 0 rgba(0,0,0,0.37);
+  font-family: 'Inter', sans-serif;
+  color: #333;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.avatar {
+  border-radius: 50%;
+}
+
+.title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #78C800; /* Duolingo green */
+}
+
+.lessonBox {
+  background: rgba(255,255,255,0.6);
+  border-radius: 0.75rem;
+  padding: 1rem;
+  text-align: center;
+}
+
+.question {
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+}
+
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.option {
+  background: #78C800;
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: transform 0.1s ease;
+}
+
+.option:hover {
+  transform: translateY(-2px);
+}
+
+.progress {
+  font-size: 0.9rem;
+  color: #555;
+}
