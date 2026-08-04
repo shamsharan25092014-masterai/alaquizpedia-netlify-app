@@ -31,6 +31,33 @@ if (hamburger && navLinks) {
     if (userAvatar) userAvatar.textContent = (user.displayName || user.username)[0].toUpperCase();
     if (userDisplayName) userDisplayName.textContent = user.displayName || user.username;
     if (adminLink && user.role === 'admin') adminLink.classList.remove('hidden');
+
+    // Add XP Badge if user function available
+    if (typeof getUserXPAndLevel === 'function') {
+      const xpData = getUserXPAndLevel(user.id);
+      let xpBadge = document.getElementById('userNavXP');
+      if (!xpBadge && userMenuBtn) {
+        xpBadge = document.createElement('span');
+        xpBadge.id = 'userNavXP';
+        xpBadge.className = 'badge badge-amber';
+        xpBadge.style.marginRight = '0.4rem';
+        xpBadge.style.fontSize = '0.75rem';
+        xpBadge.style.fontWeight = '700';
+        userMenuBtn.insertBefore(xpBadge, userDisplayName);
+      }
+      if (xpBadge) xpBadge.textContent = `⚡ ${xpData.totalXP} XP`;
+    }
+
+    // Insert Achievements link into dropdown if missing
+    const dropdown = document.getElementById('userDropdown');
+    if (dropdown && !document.getElementById('achievementsDropdownLink')) {
+      const achLink = document.createElement('a');
+      achLink.id = 'achievementsDropdownLink';
+      achLink.href = 'achievements.html';
+      achLink.className = 'dropdown-item';
+      achLink.innerHTML = '🏆 Badges &amp; XP';
+      dropdown.insertBefore(achLink, dropdown.firstChild);
+    }
   } else {
     if (navAuth) navAuth.classList.remove('hidden');
     if (navUser) navUser.classList.add('hidden');
