@@ -3,10 +3,30 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <meta name="description" content="Leaderboard — ALA QUIZPEDIA by A.SHAM SHARAN"/>
+  <meta name="description" content="Leaderboard — ALA QUIZPEDIA by A. SHAM SHARAN"/>
   <title>Leaderboard | ALA QUIZPEDIA</title>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="css/style.css"/>
+  <style>
+    .topper-card {
+      background: var(--bg-card); border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg); padding: 1.5rem; margin-bottom: 2rem;
+      box-shadow: var(--shadow-glow);
+    }
+    .topper-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin-top: 1rem;
+    }
+    .topper-box {
+      background: rgba(99,102,241,0.06); border: 1px solid var(--border-color);
+      border-radius: var(--radius-md); padding: 1rem 1.25rem; display: flex; align-items: center; gap: 1rem;
+    }
+    .topper-box-icon { font-size: 2.2rem; flex-shrink: 0; }
+    .topper-box-title { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); font-weight: 600; }
+    .topper-box-name { font-family: 'Outfit', sans-serif; font-size: 1.1rem; font-weight: 800; color: var(--text-primary); }
+    .topper-box-sub { font-size: 0.8rem; color: var(--accent-blue); font-weight: 600; }
+    .clickable-row { cursor: pointer; transition: var(--transition); }
+    .clickable-row:hover { background: rgba(99,102,241,0.08) !important; }
+  </style>
 </head>
 <body>
   <div class="bg-orbs">
@@ -24,6 +44,7 @@
       <div class="nav-links" id="navLinks">
         <a href="index.html" class="nav-link">Home</a>
         <a href="quizzes.html" class="nav-link">Quizzes</a>
+        <a href="materials.html" class="nav-link">Study Materials</a>
         <a href="leaderboard.html" class="nav-link active">Leaderboard</a>
         <div class="nav-auth" id="navAuth">
           <a href="login.html" class="btn btn-ghost">Login</a>
@@ -47,8 +68,41 @@
 
   <div class="lb-page">
     <div class="page-header">
-      <h1 class="page-title">🏆 <span class="gradient-text">Leaderboard</span></h1>
-      <p class="page-sub">Top performers on ALA QUIZPEDIA</p>
+      <h1 class="page-title">🏆 <span class="gradient-text">Leaderboard &amp; Performance</span></h1>
+      <p class="page-sub">Top student performers &amp; peer performance stats on ALA QUIZPEDIA</p>
+    </div>
+
+    <!-- Topper Summary Highlights -->
+    <div class="topper-card">
+      <div style="font-family:'Outfit',sans-serif;font-weight:800;font-size:1.1rem;color:var(--text-primary);display:flex;align-items:center;gap:0.5rem;">
+        🌟 Platform Toppers Summary
+      </div>
+      <div class="topper-grid" id="topperSummaryGrid">
+        <div class="topper-box">
+          <div class="topper-box-icon">🥇</div>
+          <div>
+            <div class="topper-box-title">#1 Overall Topper</div>
+            <div class="topper-box-name" id="topRankerName">No attempts yet</div>
+            <div class="topper-box-sub" id="topRankerScore">—</div>
+          </div>
+        </div>
+        <div class="topper-box">
+          <div class="topper-box-icon">🎯</div>
+          <div>
+            <div class="topper-box-title">Highest Accuracy</div>
+            <div class="topper-box-name" id="topAccuracyName">No attempts yet</div>
+            <div class="topper-box-sub" id="topAccuracyScore">—</div>
+          </div>
+        </div>
+        <div class="topper-box">
+          <div class="topper-box-icon">⚡</div>
+          <div>
+            <div class="topper-box-title">Most Active Quizzer</div>
+            <div class="topper-box-name" id="mostActiveName">No attempts yet</div>
+            <div class="topper-box-sub" id="mostActiveCount">—</div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- Top 3 Podium -->
@@ -57,7 +111,7 @@
     <!-- Full Rankings Table -->
     <div class="table-card">
       <div class="table-header">
-        <span class="table-title">📊 Full Rankings</span>
+        <span class="table-title">📊 Full Student Rankings (Click user to view full performance)</span>
         <select class="form-select" id="quizFilter" style="width:auto;padding:0.4rem 0.8rem;font-size:0.85rem;">
           <option value="all">All Quizzes</option>
         </select>
@@ -72,10 +126,62 @@
               <th>Score</th>
               <th>Time</th>
               <th>Date</th>
+              <th>Action</th>
             </tr>
           </thead>
           <tbody id="lbBody">
-            <tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:3rem;">No scores yet. Take a quiz to appear here!</td></tr>
+            <tr><td colspan="7" style="text-align:center;color:var(--text-muted);padding:3rem;">No scores yet. Take a quiz to appear here!</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- User Performance Detail Modal -->
+  <div class="modal-overlay hidden" id="userPerfModal">
+    <div class="modal modal-wide">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.2rem;">
+        <div style="display:flex;align-items:center;gap:0.75rem;">
+          <div class="user-avatar" id="modalUserAvatar" style="width:42px;height:42px;font-size:1.1rem;background:var(--gradient-main);">U</div>
+          <div>
+            <div style="font-family:'Outfit',sans-serif;font-weight:800;font-size:1.2rem;" id="modalUserName">User Name</div>
+            <div style="font-size:0.8rem;color:var(--text-muted);" id="modalUserSub">username</div>
+          </div>
+        </div>
+        <button class="btn btn-ghost btn-sm" onclick="closeUserPerfModal()">✕ Close</button>
+      </div>
+
+      <!-- Quick Summary Cards -->
+      <div class="stats-row" style="margin-bottom:1.5rem;">
+        <div class="stat-box stat-box-blue" style="padding:1rem;">
+          <div class="stat-box-num" id="modalAttempts" style="font-size:1.6rem;">0</div>
+          <div class="stat-box-label">Quizzes Attempted</div>
+        </div>
+        <div class="stat-box stat-box-green" style="padding:1rem;">
+          <div class="stat-box-num" id="modalAvgPct" style="font-size:1.6rem;">0%</div>
+          <div class="stat-box-label">Average Accuracy</div>
+        </div>
+        <div class="stat-box stat-box-purple" style="padding:1rem;">
+          <div class="stat-box-num" id="modalMaxPct" style="font-size:1.6rem;">0%</div>
+          <div class="stat-box-label">Best Score</div>
+        </div>
+      </div>
+
+      <!-- Detailed Attempt History -->
+      <div style="font-weight:700;font-size:0.95rem;margin-bottom:0.75rem;color:var(--text-primary);">📝 Performance History</div>
+      <div style="max-height:40vh;overflow-y:auto;border:1px solid var(--border-color);border-radius:var(--radius-md);">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Quiz Title</th>
+              <th>Score</th>
+              <th>Accuracy</th>
+              <th>Time</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody id="modalScoreHistory">
+            <tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:2rem;">No attempts recorded.</td></tr>
           </tbody>
         </table>
       </div>
@@ -85,7 +191,7 @@
   <footer class="footer">
     <div class="container">
       <div class="footer-bottom">
-        <p>© 2024 ALA QUIZPEDIA by A.SHAM SHARAN. All rights reserved.</p>
+        <p>© 2026 ALA QUIZPEDIA by A. SHAM SHARAN. All rights reserved.</p>
       </div>
     </div>
   </footer>
@@ -95,9 +201,13 @@
   <script src="js/app.js"></script>
   <script>
     const db = getDB();
-    const scores = db.scores || [];
+    const users = db.users || [];
     const quizzes = db.quizzes || [];
     const currentUser = getCurrentUser();
+
+    // Identify admin user IDs to strictly exclude from leaderboard & toppers
+    const adminIds = new Set(users.filter(u => u.role === 'admin' || u.username === 'admin').map(u => u.id));
+    const allScores = (db.scores || []).filter(s => !adminIds.has(s.userId) && s.username !== 'admin');
 
     // Populate quiz filter
     const filterEl = document.getElementById('quizFilter');
@@ -105,9 +215,53 @@
       filterEl.innerHTML += `<option value="${q.id}">${q.title}</option>`;
     });
 
+    // Compute Topper Summaries
+    function renderTopperSummary() {
+      if (allScores.length === 0) return;
+
+      // 1. Top Ranker (#1 score)
+      const sortedByPct = [...allScores].sort((a,b) => {
+        const pa = a.score/a.totalQuestions, pb = b.score/b.totalQuestions;
+        if (pb !== pa) return pb - pa;
+        return a.timeTaken - b.timeTaken;
+      });
+      const top1 = sortedByPct[0];
+      if (top1) {
+        document.getElementById('topRankerName').textContent = top1.displayName || top1.username;
+        document.getElementById('topRankerScore').textContent = `${top1.score}/${top1.totalQuestions} (${Math.round(top1.score/top1.totalQuestions*100)}%)`;
+      }
+
+      // 2. Highest Accuracy
+      const topAcc = [...allScores].sort((a,b) => (b.score/b.totalQuestions) - (a.score/a.totalQuestions))[0];
+      if (topAcc) {
+        document.getElementById('topAccuracyName').textContent = topAcc.displayName || topAcc.username;
+        document.getElementById('topAccuracyScore').textContent = `${Math.round(topAcc.score/topAcc.totalQuestions*100)}% Accuracy`;
+      }
+
+      // 3. Most Active Quizzer
+      const userAttemptCounts = {};
+      allScores.forEach(s => {
+        userAttemptCounts[s.userId] = (userAttemptCounts[s.userId] || 0) + 1;
+      });
+      let maxUserId = null, maxCount = 0;
+      Object.keys(userAttemptCounts).forEach(uid => {
+        if (userAttemptCounts[uid] > maxCount) {
+          maxCount = userAttemptCounts[uid];
+          maxUserId = uid;
+        }
+      });
+      if (maxUserId) {
+        const activeUserObj = users.find(u => u.id === maxUserId);
+        const sampleScore = allScores.find(s => s.userId === maxUserId);
+        const name = activeUserObj ? (activeUserObj.displayName || activeUserObj.username) : (sampleScore ? sampleScore.displayName || sampleScore.username : 'Student');
+        document.getElementById('mostActiveName').textContent = name;
+        document.getElementById('mostActiveCount').textContent = `${maxCount} Quizzes Completed`;
+      }
+    }
+
     function renderLeaderboard(filterQuizId = 'all') {
-      let filtered = scores;
-      if (filterQuizId !== 'all') filtered = scores.filter(s => s.quizId === filterQuizId);
+      let filtered = allScores;
+      if (filterQuizId !== 'all') filtered = allScores.filter(s => s.quizId === filterQuizId);
 
       // Sort by percentage desc, then time asc
       const sorted = [...filtered].sort((a,b) => {
@@ -132,7 +286,7 @@
           if (!s) return '';
           const pct = Math.round((s.score/s.totalQuestions)*100);
           return `
-            <div style="text-align:center;animation:fadeSlideIn 0.5s ${i*0.15}s ease both;">
+            <div style="text-align:center;animation:fadeSlideIn 0.5s ${i*0.15}s ease both;cursor:pointer;" onclick="openUserPerfModal('${s.userId}', '${(s.displayName||s.username).replace(/'/g,"\\'")}', '${s.username}')">
               <div style="font-size:2rem;">${medals[i]}</div>
               <div style="width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,${colors[i]},${colors[i]}88);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1rem;margin:0.5rem auto;">${(s.displayName||s.username||'?')[0].toUpperCase()}</div>
               <div style="font-weight:700;font-size:0.9rem;margin-bottom:0.25rem;">${s.displayName||s.username}</div>
@@ -146,7 +300,7 @@
       // Table
       const tbody = document.getElementById('lbBody');
       if (sorted.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:3rem;">No scores yet. Take a quiz to appear here!</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--text-muted);padding:3rem;">No student scores yet. Take a quiz to appear here!</td></tr>';
         return;
       }
 
@@ -155,8 +309,10 @@
         const rankClass = i===0?'rank-gold':i===1?'rank-silver':i===2?'rank-bronze':'';
         const rankIcon = i===0?'🥇':i===1?'🥈':i===2?'🥉':`#${i+1}`;
         const isMe = currentUser && s.userId === currentUser.id;
+        const escName = (s.displayName||s.username).replace(/'/g,"\\'");
+
         return `
-          <tr class="lb-row" style="${isMe?'background:rgba(99,102,241,0.06);':''}">
+          <tr class="lb-row clickable-row" onclick="openUserPerfModal('${s.userId}', '${escName}', '${s.username}')" style="${isMe?'background:rgba(99,102,241,0.06);':''}">
             <td><span class="lb-rank ${rankClass}">${rankIcon}</span></td>
             <td>
               <div class="lb-user">
@@ -174,12 +330,56 @@
             </td>
             <td style="color:var(--text-muted);font-size:0.88rem;">${s.timeTaken}s</td>
             <td style="color:var(--text-muted);font-size:0.82rem;">${formatDate(s.completedAt)}</td>
+            <td>
+              <button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();openUserPerfModal('${s.userId}', '${escName}', '${s.username}')">📊 Stats</button>
+            </td>
           </tr>
         `;
       }).join('');
     }
 
+    // Modal view user performance details
+    function openUserPerfModal(userId, displayName, username) {
+      document.getElementById('modalUserName').textContent = displayName;
+      document.getElementById('modalUserSub').textContent = '@' + username;
+      document.getElementById('modalUserAvatar').textContent = (displayName||username)[0].toUpperCase();
+
+      const perf = getUserPerformanceSummary(userId);
+      document.getElementById('modalAttempts').textContent = perf.attempts;
+      document.getElementById('modalAvgPct').textContent = perf.avgPct + '%';
+      document.getElementById('modalMaxPct').textContent = perf.maxPct + '%';
+
+      const tbody = document.getElementById('modalScoreHistory');
+      if (perf.scores.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:2rem;">No attempts recorded.</td></tr>';
+      } else {
+        tbody.innerHTML = perf.scores.map(s => {
+          const pct = Math.round((s.score/s.totalQuestions)*100);
+          return `
+            <tr>
+              <td style="font-weight:600;">${s.quizTitle||'Quiz'}</td>
+              <td>${s.score}/${s.totalQuestions}</td>
+              <td><span class="badge ${pct>=80?'badge-green':pct>=50?'badge-blue':'badge-rose'}">${pct}%</span></td>
+              <td style="color:var(--text-muted);font-size:0.82rem;">${s.timeTaken}s</td>
+              <td style="color:var(--text-muted);font-size:0.82rem;">${formatDate(s.completedAt)}</td>
+            </tr>
+          `;
+        }).join('');
+      }
+
+      document.getElementById('userPerfModal').classList.remove('hidden');
+    }
+
+    function closeUserPerfModal() {
+      document.getElementById('userPerfModal').classList.add('hidden');
+    }
+
+    document.getElementById('userPerfModal').addEventListener('click', function(e) {
+      if (e.target === this) closeUserPerfModal();
+    });
+
     filterEl.addEventListener('change', e => renderLeaderboard(e.target.value));
+    renderTopperSummary();
     renderLeaderboard();
   </script>
 </body>

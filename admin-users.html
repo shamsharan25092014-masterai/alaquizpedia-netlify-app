@@ -3,9 +3,12 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Manage Users | ALA QUIZPEDIA Admin</title>
+  <title>Manage Users &amp; Performance | ALA QUIZPEDIA Admin</title>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="css/style.css"/>
+  <style>
+    .modal-wide { max-width: 650px; }
+  </style>
 </head>
 <body>
   <div class="bg-orbs"><div class="orb orb-1"></div><div class="orb orb-3"></div></div>
@@ -55,17 +58,34 @@
     <main class="admin-main">
       <div class="admin-page-header" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;">
         <div>
-          <h1 class="admin-page-title">👥 Manage <span class="gradient-text">Users</span></h1>
-          <p class="admin-page-sub">Usernames must follow format: XXXX-XXXX</p>
+          <h1 class="admin-page-title">👥 User Management &amp; <span class="gradient-text">Performance</span></h1>
+          <p class="admin-page-sub">View all registered accounts, inspect individual user performance, and manage access</p>
         </div>
-        <button class="btn btn-primary" onclick="openCreateUser()">➕ Add User</button>
+        <button class="btn btn-primary" onclick="openCreateUser()">➕ Add Registered User</button>
+      </div>
+
+      <!-- Overview Stats -->
+      <div class="stats-row" style="margin-bottom:1.5rem;">
+        <div class="stat-box stat-box-purple">
+          <div class="stat-box-num" id="statRegUsers">0</div>
+          <div class="stat-box-label">👥 Registered Users</div>
+        </div>
+        <div class="stat-box stat-box-blue">
+          <div class="stat-box-num" id="statTotalAttempts">0</div>
+          <div class="stat-box-label">🎯 Total Quiz Attempts</div>
+        </div>
+        <div class="stat-box stat-box-green">
+          <div class="stat-box-num" id="statAvgPlatformAcc">0%</div>
+          <div class="stat-box-label">📈 Avg Platform Accuracy</div>
+        </div>
       </div>
 
       <!-- Username format info -->
       <div style="background:rgba(99,102,241,0.08);border:1px solid rgba(99,102,241,0.2);border-radius:var(--radius-md);padding:1rem 1.25rem;margin-bottom:1.5rem;font-size:0.88rem;color:var(--text-secondary);">
-        <strong style="color:var(--accent-blue);">📋 Username Rules:</strong> User accounts must use the format <code>XXXX-XXXX</code> (4 digits, a dash, 4 more digits — e.g. <code>1234-5678</code>). Random usernames are not allowed. Only you (admin) can create accounts here.
+        <strong style="color:var(--accent-blue);">🔒 Persistent User Storage:</strong> All user accounts registered on the site (using format <code>XXXX-XXXX</code>) are permanently stored until you (Admin) explicitly choose to delete them. Click <strong>📊 View Performance</strong> to inspect a student's full quiz history.
       </div>
 
+      <!-- Users Table -->
       <div class="table-card">
         <div style="overflow-x:auto;">
           <table class="data-table">
@@ -76,12 +96,14 @@
                 <th>Username</th>
                 <th>Role</th>
                 <th>Joined</th>
-                <th>Quizzes Taken</th>
+                <th>Attempts</th>
+                <th>Avg Accuracy</th>
+                <th>Best Score</th>
                 <th>Actions</th>
               </tr>
             </thead>
             <tbody id="usersBody">
-              <tr><td colspan="7" style="text-align:center;color:var(--text-muted);padding:3rem;">Loading...</td></tr>
+              <tr><td colspan="9" style="text-align:center;color:var(--text-muted);padding:3rem;">Loading...</td></tr>
             </tbody>
           </table>
         </div>
@@ -94,7 +116,7 @@
     <div class="modal">
       <div class="modal-title">➕ Create New User Account</div>
       <div style="background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.25);border-radius:var(--radius-md);padding:0.75rem 1rem;margin-bottom:1.25rem;font-size:0.85rem;color:#fbbf24;">
-        ⚠️ Username must be <strong>XXXX-XXXX</strong> format (e.g. 1234-5678). Other formats are rejected.
+        ⚠️ Username must be <strong>XXXX-XXXX</strong> format (e.g. 1234-5678).
       </div>
       <div class="form-group">
         <label class="form-label">Display Name</label>
@@ -118,6 +140,57 @@
     </div>
   </div>
 
+  <!-- User Detailed Performance Modal -->
+  <div class="modal-overlay hidden" id="userPerfModal">
+    <div class="modal modal-wide">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.2rem;">
+        <div style="display:flex;align-items:center;gap:0.75rem;">
+          <div class="user-avatar" id="modalUserAvatar" style="width:42px;height:42px;font-size:1.1rem;background:var(--gradient-main);">U</div>
+          <div>
+            <div style="font-family:'Outfit',sans-serif;font-weight:800;font-size:1.2rem;" id="modalUserName">User Name</div>
+            <div style="font-size:0.8rem;color:var(--text-muted);" id="modalUserSub">username</div>
+          </div>
+        </div>
+        <button class="btn btn-ghost btn-sm" onclick="closeUserPerfModal()">✕ Close</button>
+      </div>
+
+      <!-- Quick Summary Cards -->
+      <div class="stats-row" style="margin-bottom:1.5rem;">
+        <div class="stat-box stat-box-blue" style="padding:1rem;">
+          <div class="stat-box-num" id="modalAttempts" style="font-size:1.6rem;">0</div>
+          <div class="stat-box-label">Quizzes Attempted</div>
+        </div>
+        <div class="stat-box stat-box-green" style="padding:1rem;">
+          <div class="stat-box-num" id="modalAvgPct" style="font-size:1.6rem;">0%</div>
+          <div class="stat-box-label">Average Accuracy</div>
+        </div>
+        <div class="stat-box stat-box-purple" style="padding:1rem;">
+          <div class="stat-box-num" id="modalMaxPct" style="font-size:1.6rem;">0%</div>
+          <div class="stat-box-label">Best Score</div>
+        </div>
+      </div>
+
+      <!-- Detailed Attempt History -->
+      <div style="font-weight:700;font-size:0.95rem;margin-bottom:0.75rem;color:var(--text-primary);">📝 Quiz Attempt History</div>
+      <div style="max-height:40vh;overflow-y:auto;border:1px solid var(--border-color);border-radius:var(--radius-md);">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Quiz Title</th>
+              <th>Score</th>
+              <th>Accuracy</th>
+              <th>Time Taken</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody id="modalScoreHistory">
+            <tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:2rem;">No attempts recorded.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
   <script src="js/storage.js"></script>
   <script src="js/auth.js"></script>
   <script src="js/app.js"></script>
@@ -130,13 +203,26 @@
       const scores = db.scores || [];
       const body = document.getElementById('usersBody');
 
+      // Update overview stats
+      const regUsers = users.filter(u => u.role === 'user');
+      document.getElementById('statRegUsers').textContent = regUsers.length;
+      document.getElementById('statTotalAttempts').textContent = scores.length;
+      if (scores.length > 0) {
+        const totalPct = scores.reduce((acc, s) => acc + Math.round((s.score/s.totalQuestions)*100), 0);
+        document.getElementById('statAvgPlatformAcc').textContent = Math.round(totalPct / scores.length) + '%';
+      } else {
+        document.getElementById('statAvgPlatformAcc').textContent = '0%';
+      }
+
       if (users.length === 0) {
-        body.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--text-muted);padding:3rem;">No users yet.</td></tr>';
+        body.innerHTML = '<tr><td colspan="9" style="text-align:center;color:var(--text-muted);padding:3rem;">No users found.</td></tr>';
         return;
       }
 
       body.innerHTML = users.map(u => {
-        const scoreCount = scores.filter(s => s.userId === u.id).length;
+        const perf = getUserPerformanceSummary(u.id);
+        const escName = (u.displayName||u.username).replace(/'/g, "\\'");
+
         return `
           <tr>
             <td>
@@ -150,13 +236,53 @@
               <span class="badge ${u.role==='admin'?'badge-amber':'badge-blue'}">${u.role==='admin'?'⚙ Admin':'👤 User'}</span>
             </td>
             <td style="color:var(--text-muted);font-size:0.82rem;">${formatDate(u.createdAt)}</td>
-            <td style="font-weight:600;color:var(--accent-blue);">${scoreCount}</td>
+            <td style="font-weight:600;color:var(--accent-blue);">${perf.attempts}</td>
+            <td><span class="badge ${perf.avgPct>=80?'badge-green':perf.avgPct>=50?'badge-blue':'badge-amber'}">${perf.avgPct}%</span></td>
+            <td><strong style="color:var(--accent-emerald);">${perf.maxPct}%</strong></td>
             <td>
-              ${u.role !== 'admin' ? `<button class="btn btn-danger btn-sm" onclick="deleteUser('${u.id}','${(u.displayName||u.username).replace(/'/g,"\\'")}')">🗑 Delete</button>` : '<span style="color:var(--text-muted);font-size:0.82rem;">Protected</span>'}
+              <div class="action-btns">
+                <button class="btn btn-ghost btn-sm" onclick="openUserPerfModal('${u.id}', '${escName}', '${u.username}')">📊 Performance</button>
+                ${u.role !== 'admin' ? `<button class="btn btn-danger btn-sm" onclick="deleteUser('${u.id}','${escName}')">🗑 Delete</button>` : '<span style="color:var(--text-muted);font-size:0.8rem;padding:4px;">Protected</span>'}
+              </div>
             </td>
           </tr>
         `;
       }).join('');
+    }
+
+    function openUserPerfModal(userId, displayName, username) {
+      document.getElementById('modalUserName').textContent = displayName;
+      document.getElementById('modalUserSub').textContent = '@' + username;
+      document.getElementById('modalUserAvatar').textContent = (displayName||username)[0].toUpperCase();
+
+      const perf = getUserPerformanceSummary(userId);
+      document.getElementById('modalAttempts').textContent = perf.attempts;
+      document.getElementById('modalAvgPct').textContent = perf.avgPct + '%';
+      document.getElementById('modalMaxPct').textContent = perf.maxPct + '%';
+
+      const tbody = document.getElementById('modalScoreHistory');
+      if (perf.scores.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:2rem;">No attempts recorded for this user yet.</td></tr>';
+      } else {
+        tbody.innerHTML = perf.scores.map(s => {
+          const pct = Math.round((s.score/s.totalQuestions)*100);
+          return `
+            <tr>
+              <td style="font-weight:600;">${s.quizTitle||'Quiz'}</td>
+              <td>${s.score}/${s.totalQuestions}</td>
+              <td><span class="badge ${pct>=80?'badge-green':pct>=50?'badge-blue':'badge-rose'}">${pct}%</span></td>
+              <td style="color:var(--text-muted);font-size:0.82rem;">${s.timeTaken}s</td>
+              <td style="color:var(--text-muted);font-size:0.82rem;">${formatDate(s.completedAt)}</td>
+            </tr>
+          `;
+        }).join('');
+      }
+
+      document.getElementById('userPerfModal').classList.remove('hidden');
+    }
+
+    function closeUserPerfModal() {
+      document.getElementById('userPerfModal').classList.add('hidden');
     }
 
     function openCreateUser() {
@@ -190,24 +316,28 @@
     }
 
     function deleteUser(id, name) {
-      if (confirm(`Delete user "${name}"? Their scores will also be removed.`)) {
+      if (confirm(`Delete user "${name}"? Their scores will also be removed. This cannot be undone.`)) {
         const db = getDB();
         db.users = db.users.filter(u => u.id !== id);
         db.scores = db.scores.filter(s => s.userId !== id);
         saveDB(db);
-        showToast('User deleted.', 'info');
+        showToast('User account deleted.', 'info');
         renderUsers();
       }
     }
 
-    // Close modal on overlay click
     document.getElementById('createUserModal').addEventListener('click', function(e) {
       if (e.target === this) closeCreateUser();
     });
+    document.getElementById('userPerfModal').addEventListener('click', function(e) {
+      if (e.target === this) closeUserPerfModal();
+    });
 
-    // Enter key in modal
     document.addEventListener('keydown', e => {
-      if (e.key === 'Escape') closeCreateUser();
+      if (e.key === 'Escape') {
+        closeCreateUser();
+        closeUserPerfModal();
+      }
       if (e.key === 'Enter' && !document.getElementById('createUserModal').classList.contains('hidden')) doCreateUser();
     });
 

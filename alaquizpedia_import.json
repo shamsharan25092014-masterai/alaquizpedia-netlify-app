@@ -1,0 +1,62 @@
+{
+  "users": [],
+  "quizzes": [
+    {
+      "id": "quiz-python-imported-001",
+      "title": "General Knowledge & Science Master Quiz",
+      "category": "Science",
+      "difficulty": "Mixed",
+      "description": "Imported via Python script \u2014 Test your core knowledge of General Science and World Geography!",
+      "timePerQuestion": 30,
+      "imageId": "",
+      "createdAt": "2026-07-25T06:06:44Z",
+      "questions": [
+        {
+          "id": "q-101",
+          "type": "mcq",
+          "questionText": "Which planet in our solar system is known as the Red Planet?",
+          "options": [
+            "Venus",
+            "Mars",
+            "Jupiter",
+            "Saturn"
+          ],
+          "correctAnswer": "Mars",
+          "explanation": "Mars is called the Red Planet because of iron oxide (rust) on its surface.",
+          "imageId": ""
+        },
+        {
+          "id": "q-102",
+          "type": "mcq",
+          "questionText": "What is the hardest natural substance on Earth?",
+          "options": [
+            "Gold",
+            "Iron",
+            "Diamond",
+            "Platinum"
+          ],
+          "correctAnswer": "Diamond",
+          "explanation": "Diamond is carbon arranged in a crystal lattice structure and is the hardest natural material.",
+          "imageId": ""
+        },
+        {
+          "id": "q-103",
+          "type": "mcq",
+          "questionText": "Which element has the chemical symbol 'O'?",
+          "options": [
+            "Gold",
+            "Oxygen",
+            "Osmium",
+            "Zinc"
+          ],
+          "correctAnswer": "Oxygen",
+          "explanation": "Oxygen has the atomic number 8 and the symbol O.",
+          "imageId": ""
+        }
+      ]
+    }
+  ],
+  "scores": [],
+  "images": [],
+  "materials": []
+}

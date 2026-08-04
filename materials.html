@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="description" content="Study Materials — Notes, Videos, Links & PDFs on ALA QUIZPEDIA by A.SHAM SHARAN"/>
+  <title>Study Materials | ALA QUIZPEDIA</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="css/style.css"/>
+  <style>
+    .mat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.25rem; margin-top: 1.5rem; }
+    .mat-card {
+      background: var(--bg-card); border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg); overflow: hidden; transition: var(--transition);
+      animation: fadeSlideIn 0.4s ease both; display: flex; flex-direction: column;
+    }
+    .mat-card:hover { border-color: var(--border-hover); box-shadow: var(--shadow-glow); transform: translateY(-2px); }
+    .mat-card-header {
+      padding: 1.2rem 1.5rem; border-bottom: 1px solid var(--border-color);
+      display: flex; align-items: flex-start; gap: 0.75rem;
+    }
+    .mat-icon {
+      width: 44px; height: 44px; border-radius: var(--radius-md); flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center; font-size: 1.3rem;
+    }
+    .mat-icon-pdf { background: rgba(244,63,94,0.15); }
+    .mat-icon-note { background: rgba(99,102,241,0.15); }
+    .mat-icon-link { background: rgba(6,182,212,0.15); }
+    .mat-icon-video { background: rgba(245,158,11,0.15); }
+    .mat-card-info { flex: 1; min-width: 0; }
+    .mat-card-title {
+      font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 1rem;
+      color: var(--text-primary); margin-bottom: 0.2rem;
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .mat-card-meta { font-size: 0.8rem; color: var(--text-muted); }
+    .mat-card-body { padding: 1rem 1.5rem; flex: 1; }
+    .mat-card-desc {
+      color: var(--text-secondary); font-size: 0.88rem; line-height: 1.5;
+      display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+    }
+    .mat-card-tags { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-top: 0.75rem; }
+    .mat-tag {
+      padding: 0.2rem 0.6rem; border-radius: var(--radius-full);
+      background: rgba(99,102,241,0.1); color: var(--accent-blue);
+      font-size: 0.72rem; font-weight: 600;
+    }
+    .mat-card-footer {
+      padding: 0.85rem 1.5rem; border-top: 1px solid var(--border-color);
+      display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;
+    }
+
+    .modal-wide { max-width: 650px; }
+    .preview-content {
+      background: rgba(0,0,0,0.25); border: 1px solid var(--border-color);
+      border-radius: var(--radius-md); padding: 1.5rem;
+      color: var(--text-primary); font-size: 0.95rem; line-height: 1.7;
+      max-height: 60vh; overflow-y: auto; white-space: pre-wrap; word-wrap: break-word;
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-orbs">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+  </div>
+
+  <nav class="navbar scrolled" id="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="nav-logo">
+        <span class="logo-icon">📚</span>
+        <span class="logo-text">ALA<span class="accent">QUIZPEDIA</span></span>
+      </a>
+      <div class="nav-links" id="navLinks">
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="quizzes.html" class="nav-link">Quizzes</a>
+        <a href="materials.html" class="nav-link active">Study Materials</a>
+        <a href="leaderboard.html" class="nav-link">Leaderboard</a>
+        <div class="nav-auth" id="navAuth">
+          <a href="login.html" class="btn btn-ghost">Login</a>
+          <a href="login.html#register" class="btn btn-primary">Sign Up</a>
+        </div>
+        <div class="nav-user hidden" id="navUser">
+          <div class="user-menu" id="userMenuBtn">
+            <div class="user-avatar" id="userAvatar">U</div>
+            <span id="userDisplayName">User</span>
+            <span class="chevron">▾</span>
+          </div>
+          <div class="user-dropdown hidden" id="userDropdown">
+            <a href="admin.html" class="dropdown-item admin-only hidden" id="adminLink">⚙ Admin Panel</a>
+            <a href="#" class="dropdown-item" id="logoutBtn">↩ Logout</a>
+          </div>
+        </div>
+      </div>
+      <button class="hamburger" id="hamburger">☰</button>
+    </div>
+  </nav>
+
+  <div class="page-wrap">
+    <div class="page-header">
+      <h1 class="page-title">📖 <span class="gradient-text">Study Materials</span></h1>
+      <p class="page-sub">Access study notes, video tutorials, reference links &amp; downloadable PDFs curated by ALA QUIZPEDIA</p>
+    </div>
+
+    <!-- Type Filters -->
+    <div class="filter-bar" id="typeFilterBar">
+      <button class="filter-btn active" onclick="filterType('all', this)">All Types</button>
+      <button class="filter-btn" onclick="filterType('note', this)">📝 Notes</button>
+      <button class="filter-btn" onclick="filterType('pdf', this)">📄 PDFs</button>
+      <button class="filter-btn" onclick="filterType('video', this)">🎬 Videos</button>
+      <button class="filter-btn" onclick="filterType('link', this)">🔗 Links</button>
+    </div>
+
+    <!-- Search bar & Category filter -->
+    <div style="display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:1.5rem;align-items:center;">
+      <div class="search-wrap" style="flex:1;min-width:250px;margin-bottom:0;">
+        <span class="search-icon">🔍</span>
+        <input type="text" class="form-input search-input" id="searchInput" placeholder="Search study materials..." oninput="renderMaterials()"/>
+      </div>
+      <select class="form-select" id="catFilter" style="width:auto;padding:0.6rem 1rem;font-size:0.9rem;" onchange="renderMaterials()">
+        <option value="all">All Subjects</option>
+        <option value="General">General</option>
+        <option value="Science">Science</option>
+        <option value="History">History</option>
+        <option value="Geography">Geography</option>
+        <option value="Technology">Technology</option>
+        <option value="Sports">Sports</option>
+        <option value="Mathematics">Mathematics</option>
+        <option value="English">English</option>
+        <option value="Current Affairs">Current Affairs</option>
+      </select>
+    </div>
+
+    <!-- Materials Grid -->
+    <div class="mat-grid" id="materialsGrid">
+      <div class="empty-state" style="grid-column:1/-1;text-align:center;padding:3rem;color:var(--text-muted);">
+        No study materials available yet.
+      </div>
+    </div>
+  </div>
+
+  <!-- Reader / Preview Modal -->
+  <div class="modal-overlay hidden" id="previewModal">
+    <div class="modal modal-wide">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;">
+        <div class="modal-title" style="margin-bottom:0;" id="previewTitle">Study Resource</div>
+        <button class="btn btn-ghost btn-sm" onclick="closePreview()">✕ Close</button>
+      </div>
+      <div style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-bottom:1rem;" id="previewMeta"></div>
+      <div class="preview-content" id="previewContent"></div>
+      <div id="previewAction" style="margin-top:1.2rem;display:flex;gap:1rem;justify-content:flex-end;"></div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-bottom">
+        <p>© 2024 ALA QUIZPEDIA by A.SHAM SHARAN. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/storage.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    let currentType = 'all';
+
+    function filterType(type, btn) {
+      currentType = type;
+      document.querySelectorAll('#typeFilterBar .filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      renderMaterials();
+    }
+
+    function renderMaterials() {
+      const materials = getStudyMaterials();
+      const search = (document.getElementById('searchInput').value || '').toLowerCase().trim();
+      const cat = document.getElementById('catFilter').value;
+
+      let filtered = materials;
+
+      if (currentType !== 'all') {
+        filtered = filtered.filter(m => m.type === currentType);
+      }
+      if (cat !== 'all') {
+        filtered = filtered.filter(m => (m.category || 'General').toLowerCase() === cat.toLowerCase());
+      }
+      if (search) {
+        filtered = filtered.filter(m =>
+          (m.title || '').toLowerCase().includes(search) ||
+          (m.category || '').toLowerCase().includes(search) ||
+          (m.tags || []).some(t => t.toLowerCase().includes(search)) ||
+          (m.content || '').toLowerCase().includes(search)
+        );
+      }
+
+      const grid = document.getElementById('materialsGrid');
+      if (filtered.length === 0) {
+        grid.innerHTML = `
+          <div class="empty-state" style="grid-column:1/-1;text-align:center;padding:4rem 1rem;">
+            <div style="font-size:3rem;margin-bottom:0.5rem;">📖</div>
+            <div style="font-weight:600;font-size:1.1rem;margin-bottom:0.3rem;">No Study Materials Found</div>
+            <div style="color:var(--text-muted);font-size:0.9rem;">
+              ${search || cat !== 'all' || currentType !== 'all' ? 'Try adjusting your filters or search terms.' : 'Check back soon! The admin will add study notes and resources.'}
+            </div>
+          </div>
+        `;
+        return;
+      }
+
+      grid.innerHTML = filtered.map((m, i) => {
+        const iconMap = { pdf: 'mat-icon-pdf', note: 'mat-icon-note', link: 'mat-icon-link', video: 'mat-icon-video' };
+        const emojiMap = { pdf: '📄', note: '📝', link: '🔗', video: '🎬' };
+        const iconClass = iconMap[m.type] || 'mat-icon-note';
+        const emoji = emojiMap[m.type] || '📝';
+        const tags = (m.tags || []).map(t => `<span class="mat-tag">${t}</span>`).join('');
+        const dateStr = m.createdAt ? formatDate(m.createdAt) : '';
+        const desc = m.content ? m.content.substring(0, 140) + (m.content.length > 140 ? '…' : '') : (m.url || 'Reference Material');
+
+        return `
+          <div class="mat-card" style="animation-delay:${i * 0.05}s;">
+            <div class="mat-card-header">
+              <div class="mat-icon ${iconClass}">${emoji}</div>
+              <div class="mat-card-info">
+                <div class="mat-card-title">${m.title}</div>
+                <div class="mat-card-meta">
+                  <span class="badge badge-blue">${m.category || 'General'}</span> · ${dateStr}
+                </div>
+              </div>
+            </div>
+            <div class="mat-card-body">
+              <div class="mat-card-desc">${desc}</div>
+              ${tags ? `<div class="mat-card-tags">${tags}</div>` : ''}
+            </div>
+            <div class="mat-card-footer">
+              <button class="btn btn-primary btn-sm" onclick="openPreview('${m.id}')">📖 Read &amp; View</button>
+              ${m.url ? `<a href="${m.url}" target="_blank" class="btn btn-ghost btn-sm" style="color:var(--accent-cyan);">🔗 Open Link</a>` : ''}
+              ${m.pdfData ? `<a href="${m.pdfData}" download="${m.pdfName||'document.pdf'}" class="btn btn-ghost btn-sm" style="color:var(--accent-emerald);">📥 Download PDF</a>` : ''}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function openPreview(id) {
+      const mat = getStudyMaterials().find(m => m.id === id);
+      if (!mat) return;
+
+      document.getElementById('previewTitle').textContent = mat.title;
+      document.getElementById('previewMeta').innerHTML = `
+        <span class="badge badge-blue">${mat.category || 'General'}</span>
+        <span class="badge badge-purple">${(mat.type||'note').toUpperCase()}</span>
+        ${(mat.tags || []).map(t => `<span class="mat-tag">${t}</span>`).join('')}
+        <span style="color:var(--text-muted);font-size:0.82rem;margin-left:auto;">Added: ${mat.createdAt ? formatDate(mat.createdAt) : ''}</span>
+      `;
+      document.getElementById('previewContent').textContent = mat.content || 'No text note included.';
+
+      const act = document.getElementById('previewAction');
+      let actBtns = '';
+      if (mat.url) {
+        actBtns += `<a href="${mat.url}" target="_blank" class="btn btn-primary">🌐 Visit ${mat.type==='video'?'Video':'External'} URL</a>`;
+      }
+      if (mat.pdfData) {
+        actBtns += `<a href="${mat.pdfData}" download="${mat.pdfName||'study_material.pdf'}" class="btn btn-success">📥 Download PDF File</a>`;
+      }
+      act.innerHTML = actBtns;
+
+      document.getElementById('previewModal').classList.remove('hidden');
+    }
+
+    function closePreview() {
+      document.getElementById('previewModal').classList.add('hidden');
+    }
+
+    document.getElementById('previewModal').addEventListener('click', function(e) {
+      if (e.target === this) closePreview();
+    });
+
+    renderMaterials();
+  </script>
+</body>
+</html>

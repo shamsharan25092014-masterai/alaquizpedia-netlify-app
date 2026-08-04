@@ -24,6 +24,7 @@
       <div class="nav-links" id="navLinks">
         <a href="index.html" class="nav-link">Home</a>
         <a href="quizzes.html" class="nav-link">Quizzes</a>
+        <a href="materials.html" class="nav-link">Study Materials</a>
         <a href="leaderboard.html" class="nav-link">Leaderboard</a>
         <div class="nav-auth" id="navAuth">
           <a href="login.html" class="btn btn-ghost">Login</a>
@@ -62,7 +63,7 @@
       <form id="loginForm">
         <div class="form-group">
           <label class="form-label">Username</label>
-          <input type="text" class="form-input" id="loginUsername" placeholder="admin or 1234-5678" required/>
+          <input type="text" class="form-input" id="loginUsername" placeholder="Enter your username" required/>
         </div>
         <div class="form-group">
           <label class="form-label">Password</label>
@@ -85,14 +86,14 @@
         </div>
         <div class="form-group">
           <label class="form-label">Username</label>
-          <input type="text" class="form-input" id="regUsername" placeholder="e.g. 1234-5678" required/>
-          <div class="form-hint">⚠️ Must be in format <strong>XXXX-XXXX</strong> (4 digits, dash, 4 digits). Only admin can approve accounts.</div>
+          <input type="text" class="form-input" id="regUsername" placeholder="Choose a username" required/>
+          <div class="form-hint">Must be at least 3 characters.</div>
         </div>
         <div class="form-group">
           <label class="form-label">Password</label>
-          <input type="password" class="form-input" id="regPassword" placeholder="Create a strong password" required oninput="checkPasswordStrength(this.value)"/>
+          <input type="password" class="form-input" id="regPassword" placeholder="Create a password" required oninput="checkPasswordStrength(this.value)"/>
           <div id="pwStrength" style="margin-top:0.5rem;"></div>
-          <div class="form-hint">Must have 8+ chars, uppercase, lowercase, number &amp; special character.</div>
+          <div class="form-hint">Must have at least 6 characters.</div>
         </div>
         <div class="form-group">
           <label class="form-label">Confirm Password</label>

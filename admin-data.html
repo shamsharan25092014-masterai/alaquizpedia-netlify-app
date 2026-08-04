@@ -7,6 +7,47 @@
   <title>Import/Export Data | ALA QUIZPEDIA</title>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="css/style.css"/>
+  <style>
+    .import-section { border: 1.5px solid rgba(99,102,241,0.3); background: rgba(99,102,241,0.04); }
+    .import-section .table-header { border-bottom-color: rgba(99,102,241,0.15); }
+    .drop-zone {
+      border: 2px dashed var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 2.5rem;
+      text-align: center;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .drop-zone:hover, .drop-zone.drag-over {
+      border-color: var(--accent-blue);
+      background: rgba(99,102,241,0.06);
+    }
+    .q-preview-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.5rem; max-height: 260px; overflow-y: auto; }
+    .q-preview-item {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 0.6rem 0.9rem;
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+    .q-preview-item .q-num { font-weight: 700; color: var(--accent-blue); min-width: 28px; }
+    .q-preview-item .q-type-badge { font-size: 0.7rem; padding: 0.1rem 0.5rem; border-radius: 99px; background: rgba(99,102,241,0.15); color: var(--accent-blue); }
+    .format-hint {
+      background: rgba(245,158,11,0.07);
+      border: 1px solid rgba(245,158,11,0.2);
+      border-radius: var(--radius-md);
+      padding: 1rem 1.2rem;
+      font-size: 0.82rem;
+      color: var(--text-secondary);
+      margin-bottom: 1.2rem;
+    }
+    .format-hint code { background: rgba(255,255,255,0.06); border-radius: 4px; padding: 0.1rem 0.4rem; font-size: 0.8rem; color: var(--accent-blue); }
+    .target-quiz-row { display: flex; gap: 0.75rem; flex-wrap: wrap; align-items: flex-end; }
+    .target-quiz-row .form-group { flex: 1; min-width: 200px; margin-bottom: 0; }
+  </style>
 </head>
 <body>
   <div class="bg-orbs">
@@ -61,11 +102,11 @@
     <!-- Main Content -->
     <main class="admin-main">
       <div class="admin-page-header">
-        <h1 class="admin-page-title">💾 <span class="gradient-text">Import / Export</span> Database</h1>
-        <p class="admin-page-sub">Backup, restore, or transfer your entire ALA QUIZPEDIA database as JSON</p>
+        <h1 class="admin-page-title">💾 <span class="gradient-text">Import / Export</span></h1>
+        <p class="admin-page-sub">Import questions from JSON into any quiz, or backup/restore the full database</p>
       </div>
 
-      <!-- Database Overview Stats -->
+      <!-- Database Stats -->
       <div class="stats-row" style="margin-bottom:2rem;">
         <div class="stat-box stat-box-blue">
           <div class="stat-box-num" id="statQuizzes">0</div>
@@ -85,6 +126,118 @@
         </div>
       </div>
 
+      <!-- ★ IMPORT QUESTIONS INTO QUIZ (PRIMARY FEATURE) -->
+      <div class="table-card import-section" style="margin-bottom:1.5rem;">
+        <div class="table-header">
+          <span class="table-title">➕ Import Questions from JSON into a Quiz</span>
+          <span style="font-size:0.78rem;color:var(--text-muted);">Upload a JSON file → questions are added to a quiz</span>
+        </div>
+        <div style="padding:1.5rem;">
+
+          <!-- Format hint -->
+          <div class="format-hint">
+            <strong>📋 Supported JSON Formats:</strong><br><br>
+            <b>Format 1 — Array of questions:</b><br>
+            <code>[{"questionText":"What is 2+2?","options":["2","3","4","5"],"correctAnswer":"4","type":"mcq"},...]</code><br><br>
+            <b>Format 2 — Object with questions key:</b><br>
+            <code>{"questions":[...],"title":"Optional Quiz Title"}</code><br><br>
+            <b>Format 3 — Old format (also supported):</b><br>
+            <code>{"question":"...","options":[...],"correct":2,"type":"mcq"}</code>
+            — will be auto-converted.<br><br>
+            <b>Format 4 — Full DB backup:</b> Quizzes will be imported as whole quizzes.
+          </div>
+
+          <!-- Drop Zone for Questions Import -->
+          <div id="qDropZone" class="drop-zone"
+               onclick="document.getElementById('qImportFile').click()"
+               ondragover="event.preventDefault();document.getElementById('qDropZone').classList.add('drag-over')"
+               ondragleave="document.getElementById('qDropZone').classList.remove('drag-over')"
+               ondrop="handleQDrop(event)">
+            <div style="font-size:2.5rem;margin-bottom:0.5rem;">📂</div>
+            <div style="font-weight:600;color:var(--text-primary);margin-bottom:0.3rem;">Drop your Questions JSON file here</div>
+            <div style="color:var(--text-muted);font-size:0.85rem;">or click to browse · .json files only</div>
+            <input type="file" id="qImportFile" accept=".json" style="display:none" onchange="handleQFileSelect(event)"/>
+          </div>
+
+          <!-- Preview of parsed questions -->
+          <div id="qPreviewSection" class="hidden" style="margin-top:1.5rem;">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.75rem;flex-wrap:wrap;gap:0.5rem;">
+              <span style="font-weight:700;font-size:1rem;color:var(--text-primary);">
+                ✅ <span id="qParsedCount">0</span> questions parsed from file
+              </span>
+              <button class="btn btn-ghost btn-sm" onclick="clearQPreview()">✕ Clear</button>
+            </div>
+
+            <!-- Questions List Preview -->
+            <ul class="q-preview-list" id="qPreviewList"></ul>
+
+            <!-- Target Quiz Selection -->
+            <div style="margin-top:1.5rem;padding:1.2rem;background:rgba(99,102,241,0.06);border:1px solid rgba(99,102,241,0.2);border-radius:var(--radius-md);">
+              <div style="font-weight:700;margin-bottom:1rem;color:var(--accent-blue);">📌 Add questions to:</div>
+
+              <div style="display:flex;gap:1.5rem;flex-wrap:wrap;margin-bottom:1rem;">
+                <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer;font-size:0.9rem;">
+                  <input type="radio" name="qTarget" value="existing" checked id="targetExisting" onchange="toggleTargetMode()" style="accent-color:var(--accent-blue);width:16px;height:16px;"/>
+                  Add to an <strong>existing quiz</strong>
+                </label>
+                <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer;font-size:0.9rem;">
+                  <input type="radio" name="qTarget" value="new" id="targetNew" onchange="toggleTargetMode()" style="accent-color:var(--accent-emerald);width:16px;height:16px;"/>
+                  Create a <strong>new quiz</strong> from these questions
+                </label>
+              </div>
+
+              <!-- Existing quiz picker -->
+              <div id="existingQuizPicker">
+                <div class="target-quiz-row">
+                  <div class="form-group">
+                    <label class="form-label">Select Quiz</label>
+                    <select class="form-select" id="targetQuizSelect"></select>
+                  </div>
+                  <div>
+                    <button class="btn btn-primary" onclick="addQuestionsToExistingQuiz()" id="addToQuizBtn">
+                      ➕ Add Questions to Quiz
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- New quiz form -->
+              <div id="newQuizForm" class="hidden">
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin-bottom:0.75rem;">
+                  <div class="form-group" style="grid-column:1/-1;margin-bottom:0;">
+                    <label class="form-label">Quiz Title *</label>
+                    <input type="text" class="form-input" id="newQTitle" placeholder="e.g. Science Challenge from Import"/>
+                  </div>
+                  <div class="form-group" style="margin-bottom:0;">
+                    <label class="form-label">Category</label>
+                    <select class="form-select" id="newQCategory">
+                      <option value="General">General</option>
+                      <option value="Science">Science</option>
+                      <option value="History">History</option>
+                      <option value="Geography">Geography</option>
+                      <option value="Sports">Sports</option>
+                      <option value="Technology">Technology</option>
+                    </select>
+                  </div>
+                  <div class="form-group" style="margin-bottom:0;">
+                    <label class="form-label">Difficulty</label>
+                    <select class="form-select" id="newQDifficulty">
+                      <option value="Easy">Easy</option>
+                      <option value="Medium" selected>Medium</option>
+                      <option value="Hard">Hard</option>
+                      <option value="Mixed">Mixed</option>
+                    </select>
+                  </div>
+                </div>
+                <button class="btn btn-success" onclick="createNewQuizFromQuestions()">
+                  🚀 Create New Quiz with these Questions
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- Export Section -->
       <div class="table-card" style="margin-bottom:1.5rem;">
         <div class="table-header">
@@ -92,13 +245,11 @@
         </div>
         <div style="padding:1.5rem;">
           <p style="color:var(--text-secondary);margin-bottom:1.2rem;font-size:0.92rem;">
-            Download your entire database as a JSON file. This includes all quizzes, questions, users, scores, images, and study materials.
+            Download your entire database as a JSON file. Includes all quizzes, questions, users, scores, images, and study materials.
           </p>
-
-          <!-- Selective Export -->
           <div style="display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:1.5rem;">
             <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer;color:var(--text-secondary);font-size:0.9rem;">
-              <input type="checkbox" id="expQuizzes" checked style="accent-color:var(--accent-blue);width:16px;height:16px;"/> Quizzes & Questions
+              <input type="checkbox" id="expQuizzes" checked style="accent-color:var(--accent-blue);width:16px;height:16px;"/> Quizzes &amp; Questions
             </label>
             <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer;color:var(--text-secondary);font-size:0.9rem;">
               <input type="checkbox" id="expUsers" checked style="accent-color:var(--accent-blue);width:16px;height:16px;"/> Users
@@ -113,25 +264,23 @@
               <input type="checkbox" id="expMaterials" checked style="accent-color:var(--accent-blue);width:16px;height:16px;"/> Study Materials
             </label>
           </div>
-
           <div style="display:flex;gap:1rem;flex-wrap:wrap;">
-            <button class="btn btn-primary" onclick="exportFull()" id="exportFullBtn">📥 Export Full Database</button>
-            <button class="btn btn-ghost" onclick="exportSelected()" id="exportSelBtn">📋 Export Selected Only</button>
+            <button class="btn btn-primary" onclick="exportFull()">📥 Export Full Database</button>
+            <button class="btn btn-ghost" onclick="exportSelected()">📋 Export Selected Only</button>
           </div>
         </div>
       </div>
 
-      <!-- Import Section -->
+      <!-- Full DB Import Section -->
       <div class="table-card" style="margin-bottom:1.5rem;">
         <div class="table-header">
-          <span class="table-title">📤 Import Database</span>
+          <span class="table-title">📤 Restore Full Database from Backup</span>
         </div>
         <div style="padding:1.5rem;">
           <p style="color:var(--text-secondary);margin-bottom:1rem;font-size:0.92rem;">
-            Restore your database from a previously exported JSON file. <strong style="color:var(--accent-rose);">⚠ Warning:</strong> This will overwrite your current data.
+            Restore your database from a previously exported full backup JSON file. <strong style="color:var(--accent-rose);">⚠ Warning:</strong> This will overwrite or merge your current data.
           </p>
 
-          <!-- Import Mode -->
           <div style="display:flex;gap:1.5rem;flex-wrap:wrap;margin-bottom:1.5rem;">
             <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer;color:var(--text-secondary);font-size:0.9rem;">
               <input type="radio" name="importMode" value="overwrite" checked style="accent-color:var(--accent-rose);width:16px;height:16px;"/>
@@ -143,19 +292,17 @@
             </label>
           </div>
 
-          <!-- Drop Zone -->
-          <div id="dropZone" style="border:2px dashed var(--border-color);border-radius:var(--radius-lg);padding:2.5rem;text-align:center;cursor:pointer;transition:var(--transition);margin-bottom:1rem;"
+          <div id="dropZone" class="drop-zone"
                onclick="document.getElementById('importFileInput').click()"
-               ondragover="event.preventDefault();this.style.borderColor='var(--accent-blue)';this.style.background='rgba(99,102,241,0.06)'"
-               ondragleave="this.style.borderColor='var(--border-color)';this.style.background='transparent'"
+               ondragover="event.preventDefault();document.getElementById('dropZone').classList.add('drag-over')"
+               ondragleave="document.getElementById('dropZone').classList.remove('drag-over')"
                ondrop="handleDrop(event)">
             <div style="font-size:2.5rem;margin-bottom:0.5rem;">📂</div>
-            <div style="font-weight:600;color:var(--text-primary);margin-bottom:0.3rem;">Drop your JSON file here</div>
+            <div style="font-weight:600;color:var(--text-primary);margin-bottom:0.3rem;">Drop full backup JSON file here</div>
             <div style="color:var(--text-muted);font-size:0.85rem;">or click to browse</div>
             <input type="file" id="importFileInput" accept=".json" style="display:none" onchange="handleFileSelect(event)"/>
           </div>
 
-          <!-- Preview Area -->
           <div id="previewArea" class="hidden" style="margin-top:1rem;">
             <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.75rem;">
               <span style="font-weight:600;color:var(--text-primary);">📄 File Preview</span>
@@ -178,7 +325,7 @@
         <div style="padding:1.5rem;display:flex;gap:1rem;flex-wrap:wrap;align-items:center;">
           <div style="flex:1;">
             <div style="font-weight:600;color:var(--text-primary);margin-bottom:0.25rem;">Reset Entire Database</div>
-            <div style="color:var(--text-muted);font-size:0.85rem;">This will permanently delete ALL quizzes, users, scores, images, and study materials. The admin account will be re-created.</div>
+            <div style="color:var(--text-muted);font-size:0.85rem;">Permanently deletes ALL quizzes, users, scores, images, and study materials. Admin account will be re-created.</div>
           </div>
           <button class="btn btn-danger" onclick="resetDatabase()">🗑 Reset Database</button>
         </div>
@@ -190,14 +337,12 @@
   <script src="js/auth.js"></script>
   <script src="js/app.js"></script>
   <script>
-    const user = requireAdmin();
-    if (user) {
-      document.getElementById('adminName') && (document.getElementById('adminName').textContent = user.displayName || user.username);
-    }
+    requireAdmin();
 
     let pendingImportData = null;
+    let parsedQuestions = [];
 
-    // ---- Load Stats ----
+    // ---- Stats ----
     function loadStats() {
       const db = getDB();
       document.getElementById('statQuizzes').textContent = (db.quizzes || []).length;
@@ -207,14 +352,233 @@
     }
     loadStats();
 
-    // ---- Export Full ----
+    // ---- Populate existing quizzes dropdown ----
+    function populateQuizDropdown() {
+      const sel = document.getElementById('targetQuizSelect');
+      const quizzes = getAllQuizzes();
+      sel.innerHTML = quizzes.length === 0
+        ? '<option value="">— No quizzes yet —</option>'
+        : quizzes.map(q => `<option value="${q.id}">${q.title} (${(q.questions||[]).length} questions)</option>`).join('');
+    }
+    populateQuizDropdown();
+
+    // ---- Toggle target mode ----
+    function toggleTargetMode() {
+      const isNew = document.getElementById('targetNew').checked;
+      document.getElementById('existingQuizPicker').classList.toggle('hidden', isNew);
+      document.getElementById('newQuizForm').classList.toggle('hidden', !isNew);
+    }
+
+    // ============================================================
+    //  IMPORT QUESTIONS FROM JSON
+    // ============================================================
+    function handleQDrop(e) {
+      e.preventDefault();
+      document.getElementById('qDropZone').classList.remove('drag-over');
+      const file = e.dataTransfer.files[0];
+      if (file) processQFile(file);
+    }
+
+    function handleQFileSelect(e) {
+      const file = e.target.files[0];
+      if (file) processQFile(file);
+    }
+
+    function processQFile(file) {
+      if (!file.name.endsWith('.json')) {
+        showToast('❌ Only .json files are accepted.', 'error');
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        try {
+          const raw = JSON.parse(evt.target.result);
+          parsedQuestions = extractQuestions(raw);
+          if (parsedQuestions.length === 0) {
+            showToast('⚠️ No questions found in this file. Check the format hint above.', 'error');
+            return;
+          }
+          showQPreview(parsedQuestions);
+          showToast(`✅ ${parsedQuestions.length} questions found in file!`, 'success');
+        } catch(err) {
+          showToast('❌ Invalid JSON file: ' + err.message, 'error');
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    /**
+     * Extract questions from any supported JSON format and normalise
+     * to { id, type, questionText, options, correctAnswer, explanation }
+     */
+    function extractQuestions(data) {
+      let raw = [];
+
+      // Format 4: Full DB backup with quizzes array
+      if (data.quizzes && Array.isArray(data.quizzes)) {
+        data.quizzes.forEach(quiz => {
+          (quiz.questions || []).forEach(q => raw.push(q));
+        });
+      }
+      // Format 2: { questions: [...] }
+      else if (data.questions && Array.isArray(data.questions)) {
+        raw = data.questions;
+      }
+      // Format 1: direct array
+      else if (Array.isArray(data)) {
+        raw = data;
+      }
+
+      // Normalise each question
+      return raw.map((q, i) => {
+        const norm = { id: 'imp-' + Date.now() + '-' + i };
+
+        // question text
+        norm.questionText = q.questionText || q.question || q.text || q.q || '';
+
+        // type
+        const rawType = (q.type || 'mcq').toLowerCase();
+        if (rawType.includes('true') || rawType.includes('tf') || rawType.includes('bool')) {
+          norm.type = 'truefalse';
+        } else if (rawType.includes('fill') || rawType.includes('blank')) {
+          norm.type = 'fillinblank';
+        } else {
+          norm.type = 'mcq';
+        }
+
+        // options
+        norm.options = q.options || (norm.type === 'truefalse' ? ['True','False'] : []);
+
+        // correctAnswer — handle index or string
+        if (q.correctAnswer !== undefined) {
+          norm.correctAnswer = q.correctAnswer;
+        } else if (q.correct !== undefined) {
+          // index-based
+          if (typeof q.correct === 'number' && norm.options.length > 0) {
+            norm.correctAnswer = norm.options[q.correct] || '';
+          } else {
+            norm.correctAnswer = String(q.correct);
+          }
+        } else if (q.answer !== undefined) {
+          norm.correctAnswer = String(q.answer);
+        } else {
+          norm.correctAnswer = '';
+        }
+
+        // explanation
+        norm.explanation = q.explanation || q.hint || q.reason || '';
+
+        return norm;
+      }).filter(q => q.questionText.trim() !== '');
+    }
+
+    function showQPreview(questions) {
+      document.getElementById('qParsedCount').textContent = questions.length;
+      const list = document.getElementById('qPreviewList');
+      list.innerHTML = questions.map((q, i) => `
+        <li class="q-preview-item">
+          <span class="q-num">Q${i+1}</span>
+          <span class="q-type-badge">${q.type}</span>
+          <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escHtml(q.questionText)}</span>
+          <span style="font-size:0.78rem;color:var(--accent-emerald);">✓ ${escHtml(q.correctAnswer)}</span>
+        </li>
+      `).join('');
+      document.getElementById('qPreviewSection').classList.remove('hidden');
+      document.getElementById('qDropZone').style.display = 'none';
+
+      // Auto-fill quiz title if data had a title
+      const titleEl = document.getElementById('newQTitle');
+      if (!titleEl.value) {
+        titleEl.value = 'Imported Quiz ' + new Date().toLocaleDateString('en-IN');
+      }
+    }
+
+    function clearQPreview() {
+      parsedQuestions = [];
+      document.getElementById('qPreviewSection').classList.add('hidden');
+      document.getElementById('qDropZone').style.display = '';
+      document.getElementById('qImportFile').value = '';
+      document.getElementById('newQTitle').value = '';
+    }
+
+    // ---- Add questions to EXISTING quiz ----
+    function addQuestionsToExistingQuiz() {
+      const quizId = document.getElementById('targetQuizSelect').value;
+      if (!quizId) {
+        showToast('❌ No quiz selected. Create a quiz first!', 'error');
+        return;
+      }
+      if (parsedQuestions.length === 0) {
+        showToast('❌ No questions to add.', 'error');
+        return;
+      }
+
+      const db = getDB();
+      const quiz = db.quizzes.find(q => q.id === quizId);
+      if (!quiz) {
+        showToast('❌ Quiz not found.', 'error');
+        return;
+      }
+
+      if (!quiz.questions) quiz.questions = [];
+      parsedQuestions.forEach(q => quiz.questions.push(q));
+      quiz.updatedAt = new Date().toISOString();
+      saveDB(db);
+
+      showToast(`✅ ${parsedQuestions.length} questions added to "${quiz.title}"!`, 'success');
+      clearQPreview();
+      populateQuizDropdown();
+      loadStats();
+    }
+
+    // ---- Create NEW quiz from imported questions ----
+    function createNewQuizFromQuestions() {
+      const title = document.getElementById('newQTitle').value.trim();
+      if (!title) {
+        showToast('❌ Please enter a quiz title.', 'error');
+        document.getElementById('newQTitle').focus();
+        return;
+      }
+      if (parsedQuestions.length === 0) {
+        showToast('❌ No questions to import.', 'error');
+        return;
+      }
+
+      const quiz = {
+        id: 'quiz-imp-' + Date.now(),
+        title,
+        description: `Imported quiz with ${parsedQuestions.length} questions`,
+        category: document.getElementById('newQCategory').value,
+        difficulty: document.getElementById('newQDifficulty').value,
+        timePerQuestion: 30,
+        questions: parsedQuestions,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      };
+
+      saveQuiz(quiz);
+      showToast(`🚀 Quiz "${title}" created with ${parsedQuestions.length} questions!`, 'success');
+      clearQPreview();
+      populateQuizDropdown();
+      loadStats();
+
+      // Offer to go view the quiz
+      setTimeout(() => {
+        if (confirm(`Quiz "${title}" created! Go to Manage Quizzes to see it?`)) {
+          window.location.href = 'admin-quizzes.html';
+        }
+      }, 600);
+    }
+
+    // ============================================================
+    //  FULL DB EXPORT
+    // ============================================================
     function exportFull() {
       const db = getDB();
       downloadJSON(db, `alaquizpedia_full_backup_${formatDateFile()}.json`);
       showToast('✅ Full database exported!', 'success');
     }
 
-    // ---- Export Selected ----
     function exportSelected() {
       const db = getDB();
       const data = {};
@@ -235,11 +599,8 @@
       const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
-      a.href = url;
-      a.download = filename;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
+      a.href = url; a.download = filename;
+      document.body.appendChild(a); a.click(); a.remove();
       URL.revokeObjectURL(url);
     }
 
@@ -248,11 +609,12 @@
       return `${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}_${String(d.getHours()).padStart(2,'0')}${String(d.getMinutes()).padStart(2,'0')}`;
     }
 
-    // ---- Import ----
+    // ============================================================
+    //  FULL DB IMPORT (restore from backup)
+    // ============================================================
     function handleDrop(e) {
       e.preventDefault();
-      e.currentTarget.style.borderColor = 'var(--border-color)';
-      e.currentTarget.style.background = 'transparent';
+      document.getElementById('dropZone').classList.remove('drag-over');
       const file = e.dataTransfer.files[0];
       if (file) processFile(file);
     }
@@ -284,14 +646,13 @@
       const pa = document.getElementById('previewArea');
       const ps = document.getElementById('previewStats');
       pa.classList.remove('hidden');
-
       const items = [];
-      if (data.quizzes) items.push(`<span class="badge badge-blue" style="padding:0.4rem 0.8rem;font-size:0.85rem;">📝 ${data.quizzes.length} Quizzes</span>`);
-      if (data.users) items.push(`<span class="badge badge-purple" style="padding:0.4rem 0.8rem;font-size:0.85rem;">👥 ${data.users.length} Users</span>`);
-      if (data.scores) items.push(`<span class="badge badge-amber" style="padding:0.4rem 0.8rem;font-size:0.85rem;">🎯 ${data.scores.length} Scores</span>`);
-      if (data.images) items.push(`<span class="badge badge-green" style="padding:0.4rem 0.8rem;font-size:0.85rem;">🖼 ${data.images.length} Images</span>`);
-      if (data.materials) items.push(`<span class="badge badge-rose" style="padding:0.4rem 0.8rem;font-size:0.85rem;">📖 ${data.materials.length} Materials</span>`);
-
+      if (data.quizzes) items.push(`<span class="badge badge-blue" style="padding:0.4rem 0.8rem;">📝 ${data.quizzes.length} Quizzes</span>`);
+      if (data.users)   items.push(`<span class="badge badge-purple" style="padding:0.4rem 0.8rem;">👥 ${data.users.length} Users</span>`);
+      if (data.scores)  items.push(`<span class="badge badge-amber" style="padding:0.4rem 0.8rem;">🎯 ${data.scores.length} Scores</span>`);
+      if (data.images)  items.push(`<span class="badge badge-green" style="padding:0.4rem 0.8rem;">🖼 ${data.images.length} Images</span>`);
+      if (data.materials) items.push(`<span class="badge badge-rose" style="padding:0.4rem 0.8rem;">📖 ${data.materials.length} Materials</span>`);
+      if (items.length === 0) items.push(`<span style="color:var(--text-muted);">No recognisable data found in file.</span>`);
       ps.innerHTML = items.join('');
     }
 
@@ -309,59 +670,54 @@
       if (mode === 'overwrite') {
         if (!confirm('⚠ This will OVERWRITE all your current data. Are you sure?')) return;
         const db = getDB();
-        if (pendingImportData.quizzes) db.quizzes = pendingImportData.quizzes;
-        if (pendingImportData.users) db.users = pendingImportData.users;
-        if (pendingImportData.scores) db.scores = pendingImportData.scores;
-        if (pendingImportData.images) db.images = pendingImportData.images;
-        if (pendingImportData.materials) db.materials = pendingImportData.materials;
+        if (pendingImportData.quizzes)    db.quizzes   = migrateQuizzes(pendingImportData.quizzes);
+        if (pendingImportData.users)      db.users     = pendingImportData.users;
+        if (pendingImportData.scores)     db.scores    = pendingImportData.scores;
+        if (pendingImportData.images)     db.images    = pendingImportData.images;
+        if (pendingImportData.materials)  db.materials = pendingImportData.materials;
         saveDB(db);
         seedAdmin();
       } else {
-        // Merge mode
         const db = getDB();
         if (pendingImportData.quizzes) {
-          pendingImportData.quizzes.forEach(q => {
-            if (!db.quizzes.find(e => e.id === q.id)) db.quizzes.push(q);
-          });
+          const migrated = migrateQuizzes(pendingImportData.quizzes);
+          migrated.forEach(q => { if (!db.quizzes.find(e => e.id === q.id)) db.quizzes.push(q); });
         }
         if (pendingImportData.users) {
-          pendingImportData.users.forEach(u => {
-            if (!db.users.find(e => e.id === u.id)) db.users.push(u);
-          });
+          pendingImportData.users.forEach(u => { if (!db.users.find(e => e.id === u.id)) db.users.push(u); });
         }
         if (pendingImportData.scores) {
-          pendingImportData.scores.forEach(s => {
-            db.scores.push(s);
-          });
+          pendingImportData.scores.forEach(s => db.scores.push(s));
         }
         if (pendingImportData.images) {
-          pendingImportData.images.forEach(img => {
-            if (!db.images.find(e => e.id === img.id)) db.images.push(img);
-          });
+          pendingImportData.images.forEach(img => { if (!db.images.find(e => e.id === img.id)) db.images.push(img); });
         }
         if (pendingImportData.materials) {
           if (!db.materials) db.materials = [];
-          pendingImportData.materials.forEach(m => {
-            if (!db.materials.find(e => e.id === m.id)) db.materials.push(m);
-          });
+          pendingImportData.materials.forEach(m => { if (!db.materials.find(e => e.id === m.id)) db.materials.push(m); });
         }
         saveDB(db);
       }
 
       showToast('✅ Database imported successfully!', 'success');
       clearPreview();
-      setTimeout(() => { loadStats(); }, 500);
+      loadStats();
+      populateQuizDropdown();
     }
 
     // ---- Reset ----
     function resetDatabase() {
       if (!confirm('⚠ WARNING: This will DELETE ALL DATA permanently. Are you absolutely sure?')) return;
       if (!confirm('⚠ FINAL WARNING: This cannot be undone. Proceed?')) return;
-
       localStorage.removeItem('alaquizpedia_db');
       seedAdmin();
       showToast('🗑 Database has been reset.', 'info');
       setTimeout(() => location.reload(), 1000);
+    }
+
+    // ---- Helper ----
+    function escHtml(s) {
+      return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
     }
   </script>
 </body>

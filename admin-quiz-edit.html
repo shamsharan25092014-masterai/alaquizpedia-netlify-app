@@ -118,6 +118,21 @@
         <div id="genStatus" style="margin-top:0.75rem;font-size:0.85rem;color:var(--text-muted);"></div>
       </div>
 
+      <!-- 📥 IMPORT QUESTIONS FROM JSON BOX -->
+      <div class="gen-box" style="background: linear-gradient(135deg, rgba(16,185,129,0.08), rgba(99,102,241,0.08)); border-color: rgba(16,185,129,0.25);">
+        <h3>📥 Import Questions from JSON File</h3>
+        <p style="font-size:0.88rem;color:var(--text-secondary);margin-bottom:1rem;">
+          Upload a <code>.json</code> file containing questions (e.g. <code>sample_questions.json</code> or <code>alaquizpedia_import.json</code>) to instantly add them into this quiz!
+        </p>
+        <div style="display:flex;gap:1rem;flex-wrap:wrap;align-items:center;">
+          <input type="file" id="jsonBoxFileInput" accept=".json" style="display:none" onchange="importQuestionsIntoEditor(event)"/>
+          <button class="btn btn-primary" onclick="document.getElementById('jsonBoxFileInput').click()">
+            📂 Select JSON File to Import Questions
+          </button>
+          <span style="font-size:0.82rem;color:var(--text-muted);">Supports single array of questions, quiz objects, or backup JSONs</span>
+        </div>
+      </div>
+
       <!-- Quiz Metadata -->
       <div class="table-card" style="margin-bottom:1.5rem;">
         <div class="table-header"><span class="table-title">📋 Quiz Details</span></div>
@@ -178,10 +193,11 @@
             <button class="btn btn-ghost btn-sm" onclick="addQuestion('mcq')">➕ Multiple Choice</button>
             <button class="btn btn-ghost btn-sm" onclick="addQuestion('truefalse')">➕ True / False</button>
             <button class="btn btn-ghost btn-sm" onclick="addQuestion('fillinblank')">➕ Fill in Blank</button>
+            <button class="btn btn-primary btn-sm" onclick="document.getElementById('jsonBoxFileInput').click()">📥 Import Questions JSON</button>
           </div>
-          <div class="drag-hint">💡 Click the buttons above to add questions manually, or use the generator above to auto-fill.</div>
+          <div class="drag-hint">💡 Click the buttons above to add questions manually, import from JSON file, or use the topic generator above.</div>
           <div class="q-editor-wrap" id="qEditorWrap">
-            <div id="noQMsg" style="text-align:center;padding:2rem;color:var(--text-muted);">No questions yet. Add manually or generate from a topic.</div>
+            <div id="noQMsg" style="text-align:center;padding:2rem;color:var(--text-muted);">No questions yet. Add manually, import JSON, or generate from a topic.</div>
           </div>
         </div>
       </div>
@@ -419,6 +435,88 @@
     function updateCorrectByIndex(i, oi) { questions[i].correctAnswer = questions[i].options[oi]; }
     function updateCorrectAnswer(i, val) { questions[i].correctAnswer = val; }
     function updateExplanation(i, val) { questions[i].explanation = val; }
+
+    /* ---- Import Questions from JSON ---- */
+    function importQuestionsIntoEditor(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      if (!file.name.endsWith('.json')) {
+        showToast('❌ Only .json files are accepted.', 'error');
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        try {
+          const data = JSON.parse(evt.target.result);
+          const imported = extractQuestionsFromJSON(data);
+          if (imported.length === 0) {
+            showToast('⚠️ No valid questions found in this JSON file.', 'error');
+            return;
+          }
+
+          // Auto-fill title/description/category if available and fields are empty
+          if (!document.getElementById('quizTitle').value && (data.title || (data.quizzes && data.quizzes[0] && data.quizzes[0].title))) {
+            document.getElementById('quizTitle').value = data.title || data.quizzes[0].title;
+          }
+          if (!document.getElementById('quizDesc').value && (data.description || (data.quizzes && data.quizzes[0] && data.quizzes[0].description))) {
+            document.getElementById('quizDesc').value = data.description || data.quizzes[0].description;
+          }
+
+          questions = [...questions, ...imported];
+          renderAllQuestions();
+          showToast(`✅ ${imported.length} questions imported into quiz editor!`, 'success');
+          document.getElementById('qEditorWrap').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        } catch(err) {
+          showToast('❌ Invalid JSON file: ' + err.message, 'error');
+        }
+      };
+      reader.readAsText(file);
+      e.target.value = '';
+    }
+
+    function extractQuestionsFromJSON(data) {
+      let raw = [];
+      if (data.quizzes && Array.isArray(data.quizzes)) {
+        data.quizzes.forEach(qz => (qz.questions || []).forEach(q => raw.push(q)));
+      } else if (data.questions && Array.isArray(data.questions)) {
+        raw = data.questions;
+      } else if (Array.isArray(data)) {
+        raw = data;
+      }
+
+      return raw.map((q, i) => {
+        const q_text = q.questionText || q.question || q.text || q.q || '';
+        const rawType = (q.type || 'mcq').toLowerCase();
+        let type = 'mcq';
+        if (rawType.includes('true') || rawType.includes('tf') || rawType.includes('bool')) type = 'truefalse';
+        else if (rawType.includes('fill') || rawType.includes('blank')) type = 'fillinblank';
+
+        const opts = q.options || (type === 'truefalse' ? ['True','False'] : ['','','','']);
+
+        let corr = '';
+        if (q.correctAnswer !== undefined) {
+          corr = q.correctAnswer;
+        } else if (q.correct !== undefined) {
+          if (typeof q.correct === 'number' && opts.length > 0) {
+            corr = opts[q.correct] || '';
+          } else {
+            corr = String(q.correct);
+          }
+        } else if (q.answer !== undefined) {
+          corr = String(q.answer);
+        }
+
+        return {
+          id: genId('q'),
+          type,
+          questionText: q_text,
+          options: opts,
+          correctAnswer: corr,
+          explanation: q.explanation || q.hint || '',
+          imageId: q.imageId || ''
+        };
+      }).filter(q => q.questionText.trim() !== '');
+    }
 
     /* ---- Save Quiz ---- */
     function saveQuizForm() {

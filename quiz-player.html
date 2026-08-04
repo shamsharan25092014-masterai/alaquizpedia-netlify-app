@@ -230,7 +230,7 @@
       document.getElementById('explanationBox').classList.add('hidden');
       document.getElementById('questionCard').style.animation = 'none';
       void document.getElementById('questionCard').offsetHeight;
-      document.getElementById('questionCard').style.animation = 'fadeSlideIn 0.4s ease';
+      document.getElementById('questionCard').style.animation = 'fadeSlideIn 0.15s ease';
 
       const typeLabel = { mcq: 'Multiple Choice', truefalse: 'True / False', fillinblank: 'Fill in the Blank' };
       document.getElementById('questionType').textContent = typeLabel[q.type] || 'Multiple Choice';
@@ -331,11 +331,17 @@
         });
       }
 
-      if (isCorrect) { score++; showToast('✅ Correct!', 'success', 1500); }
-      else { showToast('❌ Wrong!', 'error', 1500); }
+      if (isCorrect) { 
+        score++; 
+        showToast('✅ Correct!', 'success', 1000); 
+        setTimeout(nextQuestion, 1000); // Auto advance
+      }
+      else { 
+        showToast('❌ Wrong!', 'error', 1500); 
+        document.getElementById('nextBtn').classList.remove('hidden');
+      }
 
       showExplanation(isCorrect, correct, explanation);
-      document.getElementById('nextBtn').classList.remove('hidden');
     }
 
     function checkFill() {
@@ -353,11 +359,17 @@
       input.style.borderColor = isCorrect ? 'rgba(16,185,129,0.5)' : 'rgba(244,63,94,0.5)';
       input.style.background = isCorrect ? 'rgba(16,185,129,0.08)' : 'rgba(244,63,94,0.08)';
 
-      if (isCorrect) { score++; showToast('✅ Correct!', 'success', 1500); }
-      else { showToast(`❌ Answer: ${q.correctAnswer}`, 'error', 2500); }
+      if (isCorrect) { 
+        score++; 
+        showToast('✅ Correct!', 'success', 1000); 
+        setTimeout(nextQuestion, 1000); // Auto advance
+      }
+      else { 
+        showToast(`❌ Answer: ${q.correctAnswer}`, 'error', 2500); 
+        document.getElementById('nextBtn').classList.remove('hidden');
+      }
 
       showExplanation(isCorrect, q.correctAnswer, q.explanation);
-      document.getElementById('nextBtn').classList.remove('hidden');
     }
 
     function showExplanation(correct, answer, explanation) {
@@ -376,9 +388,10 @@
       totalTime = Math.round((Date.now() - startTime) / 1000);
       const user = getCurrentUser();
 
+      let xpEarned = 0;
       // Save score
       if (user) {
-        submitScore({
+        const res = submitScore({
           id: genId('sc'),
           userId: user.id,
           username: user.username,
@@ -390,6 +403,7 @@
           timeTaken: totalTime,
           completedAt: new Date().toISOString()
         });
+        xpEarned = res ? res.xpGained : calculateXPForScore({ score, totalQuestions: questions.length, timeTaken: totalTime });
       }
 
       // Show result
@@ -402,13 +416,30 @@
       document.getElementById('resWrong').textContent = questions.length - score;
       document.getElementById('resTime').textContent = totalTime + 's';
 
+      // Inject XP earned badge if logged in
+      if (user && xpEarned > 0) {
+        const resStats = document.querySelector('.result-stats');
+        let xpStat = document.getElementById('resXPStat');
+        if (!xpStat && resStats) {
+          xpStat = document.createElement('div');
+          xpStat.id = 'resXPStat';
+          xpStat.className = 'result-stat';
+          const perfectBonus = (score === questions.length && score > 0) ? ' (+5 Bonus!)' : '';
+          xpStat.innerHTML = `
+            <div class="result-stat-num" style="color:var(--accent-amber);font-size:1.6rem;" id="resXPNum">+⚡ ${xpEarned}</div>
+            <div class="result-stat-label">XP Earned${perfectBonus}</div>
+          `;
+          resStats.appendChild(xpStat);
+        }
+      }
+
       // Animate ring
       setTimeout(() => {
         const fill = document.getElementById('scoreFill');
         const circ = 377;
         fill.style.strokeDashoffset = circ - (pct/100)*circ;
         fill.style.stroke = pct >= 80 ? '#10b981' : pct >= 50 ? '#6366f1' : '#f43f5e';
-      }, 200);
+      }, 100);
 
       // Grade
       let grade, title, subtitle;
