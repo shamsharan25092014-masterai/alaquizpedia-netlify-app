@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="description" content="ALA QUIZPEDIA by A.SHAM SHARAN — Test your General Knowledge with timed quizzes, leaderboards, and more."/>
+  <title>ALA QUIZPEDIA | A.SHAM SHARAN</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="/original/css/style.css"/>
+</head>
+<body>
+  <!-- Animated Background -->
+  <div class="bg-orbs">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+  </div>
+
+  <!-- Navbar -->
+  <nav class="navbar" id="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="nav-logo">
+        <span class="logo-icon">📚</span>
+        <span class="logo-text">ALA<span class="accent">QUIZPEDIA</span></span>
+      </a>
+      <div class="nav-links" id="navLinks">
+        <a href="index.html" class="nav-link active">Home</a>
+        <a href="quizzes.html" class="nav-link">Quizzes</a>
+        <a href="materials.html" class="nav-link">Study Materials</a>
+        <a href="leaderboard.html" class="nav-link">Leaderboard</a>
+        <a href="/badges" class="nav-link">Badges</a>
+        <div class="nav-auth" id="navAuth">
+          <a href="login.html" class="btn btn-ghost">Login</a>
+          <a href="login.html#register" class="btn btn-primary">Sign Up</a>
+        </div>
+        <div class="nav-user hidden" id="navUser">
+          <div class="user-menu" id="userMenuBtn">
+            <div class="user-avatar" id="userAvatar">U</div>
+            <span id="userDisplayName">User</span>
+            <span class="chevron">▾</span>
+          </div>
+          <div class="user-dropdown hidden" id="userDropdown">
+            <a href="admin.html" class="dropdown-item admin-only hidden" id="adminLink">⚙ Admin Panel</a>
+            <a href="#" class="dropdown-item" id="logoutBtn">↩ Logout</a>
+          </div>
+        </div>
+      </div>
+      <button class="hamburger" id="hamburger">☰</button>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-content">
+      <div class="hero-badge">🏆 The Ultimate Quiz Platform</div>
+      <h1 class="hero-title">
+        Welcome to<br/>
+        <span class="gradient-text">ALA QUIZPEDIA</span>
+      </h1>
+      <p class="hero-desc">Take timed quizzes, climb the leaderboard, and prove your knowledge across hundreds of topics on <strong>ALA QUIZPEDIA</strong>. Created by <strong>A.SHAM SHARAN</strong>.</p>
+      <div class="hero-actions">
+        <a href="quizzes.html" class="btn btn-primary btn-lg"><span>🚀 Start Quizzing</span></a>
+        <a href="leaderboard.html" class="btn btn-ghost btn-lg"><span>🏅 Leaderboard</span></a>
+      </div>
+      <div class="hero-stats" id="heroStats">
+        <div class="stat-card">
+          <div class="stat-num" id="statQuizzes">0</div>
+          <div class="stat-label">Quizzes</div>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-card">
+          <div class="stat-num" id="statQuestions">0</div>
+          <div class="stat-label">Questions</div>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-card">
+          <div class="stat-num" id="statUsers">0</div>
+          <div class="stat-label">Players</div>
+        </div>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="quiz-preview-card">
+        <div class="qp-header">
+          <span class="qp-category">Geography</span>
+          <span class="qp-timer">⏱ 0:45</span>
+        </div>
+        <div class="qp-question">What is the capital of Japan?</div>
+        <div class="qp-options">
+          <div class="qp-opt correct">✓ Tokyo</div>
+          <div class="qp-opt">Osaka</div>
+          <div class="qp-opt">Kyoto</div>
+          <div class="qp-opt">Hiroshima</div>
+        </div>
+        <div class="qp-progress">
+          <div class="qp-bar" style="width:60%"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Featured Quizzes -->
+  <section class="section" id="featuredSection">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">Featured <span class="gradient-text">Quizzes</span></h2>
+        <a href="quizzes.html" class="btn btn-ghost">View All →</a>
+      </div>
+      <div class="quiz-grid" id="featuredGrid">
+        <div class="empty-state">No quizzes yet. <a href="login.html">Login as admin</a> to create some!</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="section features-section">
+    <div class="container">
+      <h2 class="section-title text-center">Why <span class="gradient-text">ALA QUIZPEDIA</span>?</h2>
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">⏱</div>
+          <h3>Timed Challenges</h3>
+          <p>Race against the clock with configurable countdown timers for every quiz.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🏆</div>
+          <h3>Live Leaderboard</h3>
+          <p>Compete globally and see your ranking update after every quiz.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🤖</div>
+          <h3>AI Question Generator</h3>
+          <p>Paste any URL and auto-generate quiz questions from the content.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">📚</div>
+          <h3>Multiple Categories</h3>
+          <p>Science, History, Geography, Sports, Technology and more.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🔒</div>
+          <h3>Secure Accounts</h3>
+          <p>Username format <code>XXXX-XXXX</code> with strong password rules.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">⚙</div>
+          <h3>Admin Control</h3>
+          <p>Full admin panel to create, edit, and manage all quizzes and users.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-brand">
+          <span class="logo-icon">📚</span>
+          <span class="logo-text">ALA<span class="accent">QUIZPEDIA</span></span>
+          <p>Created with ❤️ by <strong>A.SHAM SHARAN</strong></p>
+        </div>
+        <div class="footer-links">
+          <a href="quizzes.html">Quizzes</a>
+          <a href="leaderboard.html">Leaderboard</a>
+          <a href="login.html">Login</a>
+          <a href="admin.html">Admin</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>© 2024 ALA QUIZPEDIA by A.SHAM SHARAN. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/original/js/storage.js"></script>
+  <script src="/original/js/auth.js"></script>
+  <script src="/original/js/app.js"></script>
+  <script>
+    // Load stats
+    const db = getDB();
+    const quizzes = db.quizzes || [];
+    const users = db.users || [];
+    const totalQ = quizzes.reduce((a,q)=>a+(q.questions||[]).length,0);
+    animateCount('statQuizzes', quizzes.length);
+    animateCount('statQuestions', totalQ);
+    animateCount('statUsers', users.filter(u=>u.role==='user').length);
+    const featured = [...quizzes].reverse().slice(0,3);
+    const grid = document.getElementById('featuredGrid');
+    if (featured.length > 0) {
+      grid.innerHTML = featured.map(q=>`<div class="quiz-card"><div class="card-header"><div class="card-category ${catClass(q.category)}">${q.category}</div></div><div class="card-title">${q.title}</div><div class="card-desc">${q.description}</div></div>`).join('');
+    }
+    function animateCount(id, target){
+      const el=document.getElementById(id);
+      let cur=0;
+      const step=Math.max(1,Math.floor(target/30));
+      const timer=setInterval(()=>{cur=Math.min(cur+step,target);el.textContent=cur;if(cur>=target)clearInterval(timer);},40);
+    }
+  </script>
+</body>
+</html>
