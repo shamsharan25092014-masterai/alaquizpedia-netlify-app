@@ -1,0 +1,53 @@
+/* badges.css – premium badge catalog styling */
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: linear-gradient(135deg, #1e1e2f, #2a2a3f);
+  color: #f0f0f0;
+  margin: 0;
+  padding: 0;
+}
+
+.header {
+  text-align: center;
+  padding: 2rem 0;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+}
+
+.badge-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1.5rem;
+  padding: 2rem;
+}
+
+.badge-card {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 1rem;
+  text-align: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  backdrop-filter: blur(8px);
+}
+
+.badge-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+}
+
+.badge-icon {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.badge-title {
+  font-weight: 600;
+  margin-bottom: 0.3rem;
+  font-size: 1.1rem;
+}
+
+.badge-desc {
+  font-size: 0.9rem;
+  opacity: 0.85;
+}
