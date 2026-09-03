@@ -425,9 +425,13 @@
           xpStat.id = 'resXPStat';
           xpStat.className = 'result-stat';
           const perfectBonus = (score === questions.length && score > 0) ? ' (+5 Bonus!)' : '';
+          // Build badge icons HTML (limit 50)
+          const badgeIcons = (window.currentAchievements || []).slice(0,50)
+            .map(b => `<span style="font-size:1.2rem;margin-left:4px;">${b.icon}</span>`).join('');
           xpStat.innerHTML = `
-            <div class="result-stat-num" style="color:var(--accent-amber);font-size:1.6rem;" id="resXPNum">+⚡ ${xpEarned}</div>
-            <div class="result-stat-label">XP Earned${perfectBonus}</div>
+            <div class="result-stat-num" style="color:var(--accent_amber);font-size:1.6rem;" id="resXPNum">+${xpEarned} XP</div>
+            <div class="result-stat-label">Earned${perfectBonus}</div>
+            <div class="badge-icons" style="margin-top:0.4rem;">${badgeIcons}</div>
           `;
           resStats.appendChild(xpStat);
         }
