@@ -467,6 +467,8 @@
 
         // explanation
         norm.explanation = q.explanation || q.hint || q.reason || '';
+        norm.imageUrl = q.imageUrl || q.image || '';
+        norm.imageId = q.imageId || '';
 
         return norm;
       }).filter(q => q.questionText.trim() !== '');
