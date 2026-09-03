@@ -3,83 +3,12 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <meta name="description" content="Achievements & XP Dashboard — ALA QUIZPEDIA by A. SHAM SHARAN"/>
-  <title>Achievements &amp; XP | ALA QUIZPEDIA</title>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <title>Badges & Achievements – ALA QUIZPEDIA</title>
   <link rel="stylesheet" href="css/style.css"/>
-  <style>
-    .duo-banner {
-      background: linear-gradient(135deg, rgba(99,102,241,0.15), rgba(139,92,246,0.15));
-      border: 1px solid var(--border-color); border-radius: var(--radius-xl);
-      padding: 2rem; margin-bottom: 2.5rem; position: relative; overflow: hidden;
-      box-shadow: var(--shadow-glow);
-    }
-    .duo-header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1.5rem; margin-bottom: 1.5rem; }
-    .level-badge-lg {
-      display: inline-flex; align-items: center; gap: 0.5rem;
-      padding: 0.5rem 1.25rem; border-radius: var(--radius-full);
-      background: var(--gradient-amber); color: #fff; font-weight: 800;
-      font-family: 'Outfit', sans-serif; font-size: 1.1rem; box-shadow: 0 4px 15px rgba(245,158,11,0.3);
-    }
-    .xp-bar-outer {
-      height: 14px; background: rgba(99,102,241,0.15); border-radius: 7px; overflow: hidden; position: relative;
-    }
-    .xp-bar-inner {
-      height: 100%; background: var(--gradient-amber); border-radius: 7px; transition: width 1s ease;
-    }
-
-    /* Badges Grid */
-    .badges-grid {
-      display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1.25rem; margin-bottom: 3rem;
-    }
-    .badge-card {
-      background: var(--bg-card); border: 1px solid var(--border-color);
-      border-radius: var(--radius-lg); padding: 1.5rem; text-align: center;
-      transition: var(--transition); position: relative; overflow: hidden;
-      display: flex; flex-direction: column; align-items: center;
-    }
-    .badge-card.unlocked {
-      border-color: rgba(245,158,11,0.4);
-      background: linear-gradient(180deg, rgba(245,158,11,0.06), var(--bg-card));
-      box-shadow: 0 4px 20px rgba(245,158,11,0.15);
-    }
-    .badge-card.locked {
-      opacity: 0.65; filter: grayscale(40%);
-    }
-    .badge-card:hover { transform: translateY(-4px); }
-    .badge-icon-wrap {
-      width: 72px; height: 72px; border-radius: 50%;
-      display: flex; align-items: center; justify-content: center; font-size: 2.2rem;
-      margin-bottom: 1rem; position: relative;
-      background: rgba(99,102,241,0.12); border: 2px solid var(--border-color);
-    }
-    .badge-card.unlocked .badge-icon-wrap {
-      background: linear-gradient(135deg, rgba(245,158,11,0.2), rgba(249,115,22,0.2));
-      border-color: #fbbf24; animation: pulseAmber 2s infinite;
-    }
-    .badge-title { font-family: 'Outfit', sans-serif; font-weight: 800; font-size: 1.1rem; color: var(--text-primary); margin-bottom: 0.3rem; }
-    .badge-desc { font-size: 0.85rem; color: var(--text-muted); line-height: 1.4; margin-bottom: 1rem; flex: 1; }
-    .badge-status {
-      display: inline-block; padding: 0.3rem 0.8rem; border-radius: var(--radius-full);
-      font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
-    }
-    .badge-status.unlocked { background: rgba(16,185,129,0.15); color: var(--accent-emerald); }
-    .badge-status.locked { background: rgba(255,255,255,0.06); color: var(--text-muted); }
-
-    @keyframes pulseAmber {
-      0%, 100% { box-shadow: 0 0 0 0 rgba(245,158,11,0.4); }
-      50% { box-shadow: 0 0 0 10px rgba(245,158,11,0); }
-    }
-  </style>
+  <link rel="stylesheet" href="badges.css"/>
 </head>
 <body>
-  <div class="bg-orbs">
-    <div class="orb orb-1"></div>
-    <div class="orb orb-2"></div>
-    <div class="orb orb-3"></div>
-  </div>
-
-  <nav class="navbar scrolled" id="navbar">
+  <nav class="navbar" id="navbar">
     <div class="nav-container">
       <a href="index.html" class="nav-logo">
         <span class="logo-icon">📚</span>
@@ -88,132 +17,58 @@
       <div class="nav-links" id="navLinks">
         <a href="index.html" class="nav-link">Home</a>
         <a href="quizzes.html" class="nav-link">Quizzes</a>
-        <a href="materials.html" class="nav-link">Study Materials</a>
-        <a href="leaderboard.html" class="nav-link">Leaderboard</a>
-        <a href="achievements.html" class="nav-link active">Achievements</a>
-        <div class="nav-auth" id="navAuth">
-          <a href="login.html" class="btn btn-ghost">Login</a>
-          <a href="login.html#register" class="btn btn-primary">Sign Up</a>
-        </div>
-        <div class="nav-user hidden" id="navUser">
-          <div class="user-menu" id="userMenuBtn">
-            <div class="user-avatar" id="userAvatar">U</div>
-            <span id="userDisplayName">User</span>
-            <span class="chevron">▾</span>
-          </div>
-          <div class="user-dropdown hidden" id="userDropdown">
-            <a href="admin.html" class="dropdown-item admin-only hidden" id="adminLink">⚙ Admin Panel</a>
-            <a href="#" class="dropdown-item" id="logoutBtn">↩ Logout</a>
-          </div>
-        </div>
+        <a href="badges.html" class="nav-link active">Badges</a>
+        <a href="login.html" class="btn btn-ghost">Login</a>
       </div>
       <button class="hamburger" id="hamburger">☰</button>
     </div>
   </nav>
 
-  <div class="page-wrap">
-    <div class="page-header">
-      <h1 class="page-title">🏆 <span class="gradient-text">Badges &amp; Achievements</span></h1>
-      <p class="page-sub">Earn XP, level up, and unlock Duolingo-style achievement badges on ALA QUIZPEDIA</p>
-    </div>
-
-    <!-- Duolingo Level & XP Banner -->
-    <div class="duo-banner">
-      <div class="duo-header">
-        <div>
-          <div style="font-size:0.85rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;font-weight:700;margin-bottom:0.3rem;">Current Level</div>
-          <div class="level-badge-lg" id="userLevelBadge">
-            Level 1 · Novice Quizzer 🐣
-          </div>
-        </div>
-        <div style="text-align:right;">
-          <div style="font-size:0.85rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;font-weight:700;margin-bottom:0.3rem;">Total Experience Points</div>
-          <div style="font-family:'Outfit',sans-serif;font-weight:900;font-size:2.2rem;color:var(--accent-amber);" id="userTotalXP">
-            ⚡ 0 XP
-          </div>
-        </div>
-      </div>
-
-      <!-- XP Progress to next level -->
-      <div style="margin-top:1rem;">
-        <div style="display:flex;justify-content:space-between;font-size:0.85rem;color:var(--text-muted);margin-bottom:0.4rem;font-weight:600;">
-          <span id="xpProgressLabel">Level Progress</span>
-          <span id="xpProgressPct">0%</span>
-        </div>
-        <div class="xp-bar-outer">
-          <div class="xp-bar-inner" id="xpBarFill" style="width:0%;"></div>
-        </div>
+  <section class="section" style="padding:2rem 0;">
+    <div class="container">
+      <h2 class="section-title"><span class="gradient-text">Your Badges & Achievements</span></h2>
+      <div id="badgeContainer" class="badge-grid" style="display:flex;flex-wrap:wrap;gap:1rem;justify-content:center;">
+        <!-- Badges will be injected here -->
       </div>
     </div>
-
-    <!-- Achievements Header -->
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem;">
-      <h2 style="font-family:'Outfit',sans-serif;font-weight:800;font-size:1.4rem;">🏅 Achievement Badges</h2>
-      <div style="font-size:0.9rem;color:var(--text-muted);" id="unlockedCountText">Unlocked: 0 / 8</div>
-    </div>
-
-    <!-- Badges Grid -->
-    <div class="badges-grid" id="badgesGrid">
-      <div class="empty-state" style="grid-column:1/-1;text-align:center;padding:3rem;">Loading achievements...</div>
-    </div>
-  </div>
+  </section>
 
   <footer class="footer">
     <div class="container">
-      <div class="footer-bottom">
-        <p>© 2026 ALA QUIZPEDIA by A. SHAM SHARAN. All rights reserved.</p>
+      <div class="footer-content">
+        <div class="footer-brand">
+          <span class="logo-icon">📚</span>
+          <span class="logo-text">ALA<span class="accent">QUIZPEDIA</span></span>
+          <p>Created with ❤️ by <strong>A. SHAM SHARAN</strong></p>
+        </div>
+        <div class="footer-links">
+          <a href="quizzes.html">Quizzes</a>
+          <a href="leaderboard.html">Leaderboard</a>
+          <a href="login.html">Login</a>
+        </div>
       </div>
+      <div class="footer-bottom"><p>© 2026 ALA QUIZPEDIA by A. SHAM SHARAN. All rights reserved.</p></div>
     </div>
   </footer>
 
   <script src="js/storage.js"></script>
-  <script src="js/auth.js"></script>
-  <script src="js/app.js"></script>
   <script>
     const user = getCurrentUser();
-
-    function renderAchievements() {
-      if (!user) {
-        document.getElementById('badgesGrid').innerHTML = `
-          <div class="empty-state" style="grid-column:1/-1;text-align:center;padding:4rem 1rem;">
-            <div style="font-size:3rem;margin-bottom:0.5rem;">🔒</div>
-            <div style="font-weight:700;font-size:1.2rem;margin-bottom:0.5rem;">Login Required</div>
-            <div style="color:var(--text-muted);margin-bottom:1.5rem;">Please log in to track your XP, level progress, and unlock achievement badges.</div>
-            <a href="login.html" class="btn btn-primary">🔑 Login Now</a>
-          </div>
-        `;
-        return;
+    const container = document.getElementById('badgeContainer');
+    if (!user) {
+      container.innerHTML = '<p>Please <a href="login.html">log in</a> to see your badges.</p>';
+    } else {
+      const achievements = getUserAchievements(user.id);
+      if (achievements.unlocked.length === 0) {
+        container.innerHTML = '<p>No badges earned yet. Keep quizzing!</p>';
+      } else {
+        container.innerHTML = achievements.unlocked.map(b => `
+          <div class="badge-item" style="font-size:2rem;display:flex;align-items:center;gap:0.5rem;">
+            <span>${b.icon}</span>
+            <span>${b.name}</span>
+          </div>`).join('');
       }
-
-      const xpData = getUserXPAndLevel(user.id);
-      const achData = getUserAchievements(user.id);
-
-      // Render Level Banner
-      document.getElementById('userLevelBadge').textContent = `Level ${xpData.level} · ${xpData.levelTitle}`;
-      document.getElementById('userTotalXP').textContent = `⚡ ${xpData.totalXP} XP`;
-      document.getElementById('xpProgressLabel').textContent = `Level ${xpData.level} Progress (${xpData.totalXP} / ${xpData.nextLvlXP} XP)`;
-      document.getElementById('xpProgressPct').textContent = `${xpData.progressPct}%`;
-      document.getElementById('xpBarFill').style.width = `${xpData.progressPct}%`;
-
-      document.getElementById('unlockedCountText').textContent = `Unlocked: ${achData.unlocked.length} / ${achData.all.length}`;
-
-      // Render Badges Grid
-      const grid = document.getElementById('badgesGrid');
-      grid.innerHTML = achData.all.map((a, i) => `
-        <div class="badge-card ${a.unlocked ? 'unlocked' : 'locked'}" style="animation:fadeSlideIn 0.4s ${i * 0.05}s ease both;">
-          <div class="badge-icon-wrap">
-            ${a.icon}
-          </div>
-          <div class="badge-title">${a.title}</div>
-          <div class="badge-desc">${a.desc}</div>
-          <div class="badge-status ${a.unlocked ? 'unlocked' : 'locked'}">
-            ${a.unlocked ? '✅ Unlocked' : '🔒 Progress: ' + a.progress}
-          </div>
-        </div>
-      `).join('');
     }
-
-    renderAchievements();
   </script>
 </body>
 </html>
