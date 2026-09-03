@@ -513,7 +513,8 @@
           options: opts,
           correctAnswer: corr,
           explanation: q.explanation || q.hint || '',
-          imageId: q.imageId || ''
+          imageId: q.imageId || '',
+          imageUrl: q.imageUrl || q.image || ''
         };
       }).filter(q => q.questionText.trim() !== '');
     }
