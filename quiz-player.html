@@ -237,7 +237,10 @@
       document.getElementById('questionText').textContent = q.questionText;
 
       const qImgContainer = document.getElementById('questionImageContainer');
-      if (q.imageId) {
+      if (q.imageUrl) {
+        qImgContainer.innerHTML = `<img src="${q.imageUrl}" alt="Question Image" style="max-width:100%; height:auto; max-height:300px; border-radius:8px;"/>`;
+        qImgContainer.style.display = 'block';
+      } else if (q.imageId) {
         const images = getImages();
         const imgObj = images.find(img => img.id === q.imageId);
         if (imgObj && imgObj.data) {
