@@ -9,6 +9,11 @@
   <link rel="stylesheet" href="css/style.css"/>
   <script src="js/storage.js"></script>
   <script src="js/auth.js"></script>
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
+  <script src="js/firebase-config.js"></script>
 </head>
 <body>
   <div class="bg-orbs">
@@ -37,6 +42,7 @@
       </div>
       <button class="hamburger" id="hamburger">☰</button>
     </div>
+<a href="badges.html" id="xpBadgeWidget" class="xp-badge-widget"><span id="xpCount">0 XP</span><span id="widgetBadges" class="widget-badges"></span></a>
   </nav>
 
   <div class="admin-layout">
@@ -104,8 +110,52 @@
         </div>
       </div>
 
+      <!-- Daily Quiz Cloud Publisher -->
+      <div class="table-card" id="dailyQuizEditor" style="margin-bottom:1.5rem;">
+        <div class="table-header">
+          <span class="table-title">📅 Daily Quiz Cloud Publisher (Firebase)</span>
+          <span id="dailyStatusBadge" class="badge badge-blue">Ready</span>
+        </div>
+        <div style="padding:1.5rem;">
+          <p style="color:var(--text-secondary);margin-bottom:1.2rem;font-size:0.9rem;">
+            Select any quiz or customize questions, then click <strong>Publish to Firebase</strong> to instantly update what all users see on <a href="daily-quiz.html" target="_blank" style="color:var(--accent-primary);text-decoration:underline;">Today's Quiz</a>!
+          </p>
 
-      <!-- Recent Quizzes -->
+          <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));gap:1rem;margin-bottom:1rem;">
+            <div>
+              <label style="display:block;font-weight:600;margin-bottom:0.4rem;font-size:0.85rem;">Select from Existing Quizzes</label>
+              <select id="selectExistingQuiz" class="form-control" style="width:100%;padding:0.6rem;background:rgba(255,255,255,0.05);color:#fff;border:1px solid var(--border-color);border-radius:8px;" onchange="loadQuizIntoDailyEditor(this.value)">
+                <option value="">-- Choose an existing quiz to load --</option>
+              </select>
+            </div>
+            <div>
+              <label style="display:block;font-weight:600;margin-bottom:0.4rem;font-size:0.85rem;">Daily Quiz Title</label>
+              <input type="text" id="dailyQuizTitle" placeholder="e.g., Daily GK Challenge" style="width:100%;padding:0.6rem;background:rgba(255,255,255,0.05);color:#fff;border:1px solid var(--border-color);border-radius:8px;"/>
+            </div>
+          </div>
+
+          <div style="margin-bottom:1rem;">
+            <label style="display:block;font-weight:600;margin-bottom:0.4rem;font-size:0.85rem;">Description / Subtitle</label>
+            <input type="text" id="dailyQuizDesc" placeholder="e.g., Test your knowledge in today's quick challenge!" style="width:100%;padding:0.6rem;background:rgba(255,255,255,0.05);color:#fff;border:1px solid var(--border-color);border-radius:8px;"/>
+          </div>
+
+          <div style="margin-bottom:1.2rem;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.6rem;">
+              <label style="font-weight:600;font-size:0.85rem;">Questions (<span id="dailyQuestionCount">0</span>)</label>
+              <button class="btn btn-ghost btn-sm" type="button" onclick="addBlankDailyQuestion()">➕ Add Question</button>
+            </div>
+            <div id="dailyQuestionsContainer" style="display:flex;flex-direction:column;gap:0.75rem;max-height:350px;overflow-y:auto;padding-right:0.5rem;">
+              <!-- Questions load here -->
+            </div>
+          </div>
+
+          <div style="display:flex;gap:1rem;align-items:center;flex-wrap:wrap;border-top:1px solid var(--border-color);padding-top:1rem;">
+            <button class="btn btn-primary" id="publishDailyBtn" onclick="publishDailyQuizToFirebase()">🚀 Publish Daily Quiz to Firebase</button>
+            <a href="daily-quiz.html" target="_blank" class="btn btn-ghost">👁 View Today's Quiz Page</a>
+            <span id="dailyPublishMsg" style="font-size:0.85rem;color:var(--text-muted);"></span>
+          </div>
+        </div>
+      </div>
       <div class="table-card" style="margin-bottom:1.5rem;">
         <div class="table-header">
           <span class="table-title">📝 Recent Quizzes</span>
