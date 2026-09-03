@@ -1,24 +1,75 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Badges & Achievements – ALA Quizpedia</title>
-  <link rel="stylesheet" href="badges.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Badges – ALA QUIZPEDIA</title>
+  <link rel="stylesheet" href="css/style.css"/>
+  <link rel="stylesheet" href="badges.css"/>
 </head>
 <body>
-  <header class="header">
-    <h1>Badges & Achievements</h1>
-    <nav class="nav">
-      <a href="index.html">Home</a>
-      <a href="badges.html">Badges</a>
-      <a href="profile.html">Profile</a>
-    </nav>
-  </header>
-  <main class="container">
-    <section id="badge-grid" class="badge-grid"></section>
-  </main>
-  <script src="badge.js"></script>
+  <nav class="navbar" id="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="nav-logo">
+        <span class="logo-icon">📚</span>
+        <span class="logo-text">ALA<span class="accent">QUIZPEDIA</span></span>
+      </a>
+      <div class="nav-links" id="navLinks">
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="quizzes.html" class="nav-link">Quizzes</a>
+        <a href="badges.html" class="nav-link active">Badges</a>
+        <a href="login.html" class="btn btn-ghost">Login</a>
+      </div>
+      <button class="hamburger" id="hamburger">☰</button>
+    </div>
+  </nav>
+
+  <section class="section" style="padding:2rem 0;">
+    <div class="container">
+      <h2 class="section-title"><span class="gradient-text">Your Badges</span></h2>
+      <p class="subtitle" style="margin-bottom:2rem;">Collect badges as you play quizzes.</p>
+      <div id="badgeContainer" class="badge-grid" style="display:flex;flex-wrap:wrap;gap:1rem;justify-content:center;">
+        <!-- Badges will be injected here -->
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-brand">
+          <span class="logo-icon">📚</span>
+          <span class="logo-text">ALA<span class="accent">QUIZPEDIA</span></span>
+          <p>Created with ❤️ by <strong>A. SHAM SHARAN</strong></p>
+        </div>
+        <div class="footer-links">
+          <a href="quizzes.html">Quizzes</a>
+          <a href="leaderboard.html">Leaderboard</a>
+          <a href="login.html">Login</a>
+        </div>
+      </div>
+      <div class="footer-bottom"><p>© 2026 ALA QUIZPEDIA by A. SHAM SHARAN. All rights reserved.</p></div>
+    </div>
+  </footer>
+
+  <script src="js/storage.js"></script>
+  <script>
+    const user = getCurrentUser();
+    const container = document.getElementById('badgeContainer');
+    if (!user) {
+      container.innerHTML = '<p>Please <a href="login.html">log in</a> to see your badges.</p>';
+    } else {
+      const achievements = getUserAchievements(user.id);
+      if (achievements.unlocked.length === 0) {
+        container.innerHTML = '<p>No badges earned yet. Keep quizzing!</p>';
+      } else {
+        container.innerHTML = achievements.unlocked.map(b => `
+          <div class="badge-item" style="font-size:2rem;display:flex;align-items:center;gap:0.5rem;">
+            <span>${b.icon}</span>
+            <span>${b.name}</span>
+          </div>`).join('');
+      }
+    }
+  </script>
 </body>
 </html>
