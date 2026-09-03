@@ -1,24 +1,21 @@
-// Firebase configuration placeholder - replace with your project's credentials
-// This file is loaded as an ES module
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-import { getFirestore } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
-import { getAuth } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
-
+// Firebase configuration for ALA QUIZPEDIA
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT_ID.appspot.com",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyDou77RyldEovEE0wQgazSXyGqEaCEJ_Rg",
+  authDomain: "ala-quizpedia-2026.firebaseapp.com",
+  projectId: "ala-quizpedia-2026",
+  storageBucket: "ala-quizpedia-2026.firebasestorage.app",
+  messagingSenderId: "332882186662",
+  appId: "1:332882186662:web:842e565f30cb541e917f67",
+  measurementId: "G-14LY3DZ1JK"
 };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-export const db = getFirestore(app);
-export const auth = getAuth(app);
+// Initialize Firebase for compat SDK (standard script tag usage)
+if (typeof firebase !== 'undefined' && firebase.apps) {
+  if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+  }
+}
 
-// Export utility to get the current user (will be null if not signed in)
-export function getCurrentFirebaseUser() {
-  return auth.currentUser;
+if (typeof window !== 'undefined') {
+  window.firebaseConfig = firebaseConfig;
 }
