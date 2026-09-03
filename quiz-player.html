@@ -389,7 +389,9 @@
       const user = getCurrentUser();
 
       let xpEarned = 0;
-      // Save score
+      let earnedBadges = [];
+
+      // Save score & calculate XP/badges
       if (user) {
         const res = submitScore({
           id: genId('sc'),
@@ -404,6 +406,10 @@
           completedAt: new Date().toISOString()
         });
         xpEarned = res ? res.xpGained : calculateXPForScore({ score, totalQuestions: questions.length, timeTaken: totalTime });
+        earnedBadges = res && res.achievements ? res.achievements : evaluateBadges(user.id);
+      } else {
+        xpEarned = calculateXPForScore({ score, totalQuestions: questions.length, timeTaken: totalTime });
+        earnedBadges = evaluateBadges('guest', { score, totalQuestions: questions.length, timeTaken: totalTime, timePerQuestion: quiz.timePerQuestion || 30 });
       }
 
       // Show result
@@ -416,25 +422,25 @@
       document.getElementById('resWrong').textContent = questions.length - score;
       document.getElementById('resTime').textContent = totalTime + 's';
 
-      // Inject XP earned badge if logged in
-      if (user && xpEarned > 0) {
-        const resStats = document.querySelector('.result-stats');
-        let xpStat = document.getElementById('resXPStat');
-        if (!xpStat && resStats) {
-          xpStat = document.createElement('div');
-          xpStat.id = 'resXPStat';
-          xpStat.className = 'result-stat';
-          const perfectBonus = (score === questions.length && score > 0) ? ' (+5 Bonus!)' : '';
-          // Build badge icons HTML (limit 50)
-          const badgeIcons = (window.currentAchievements || []).slice(0,50)
-            .map(b => `<span style="font-size:1.2rem;margin-left:4px;">${b.icon}</span>`).join('');
-          xpStat.innerHTML = `
-            <div class="result-stat-num" style="color:var(--accent_amber);font-size:1.6rem;" id="resXPNum">+${xpEarned} XP</div>
-            <div class="result-stat-label">Earned${perfectBonus}</div>
-            <div class="badge-icons" style="margin-top:0.4rem;">${badgeIcons}</div>
-          `;
-          resStats.appendChild(xpStat);
-        }
+      // Inject XP and Badges stat box
+      const resStats = document.querySelector('.result-stats');
+      let xpStat = document.getElementById('resXPStat');
+      if (!xpStat && resStats) {
+        xpStat = document.createElement('div');
+        xpStat.id = 'resXPStat';
+        xpStat.className = 'result-stat';
+        const perfectBonus = (score === questions.length && score > 0) ? ' (+5 Bonus!)' : '';
+        const badgeList = (earnedBadges || []).slice(0, 50);
+        const badgeIcons = badgeList.map(b => `<span title="${b.name}" style="font-size:1.3rem;display:inline-block;margin:2px;cursor:pointer;">${b.icon}</span>`).join('');
+        
+        xpStat.innerHTML = `
+          <div class="result-stat-num" style="color:var(--accent-amber, #f59e0b);font-size:1.6rem;" id="resXPNum">+${xpEarned} XP</div>
+          <div class="result-stat-label">XP Earned${perfectBonus}</div>
+          <div class="badge-icons" style="margin-top:0.5rem;display:flex;flex-wrap:wrap;justify-content:center;gap:3px;">
+            ${badgeIcons || '<span style="font-size:0.75rem;color:var(--text-muted);">Play more to unlock badges!</span>'}
+          </div>
+        `;
+        resStats.appendChild(xpStat);
       }
 
       // Animate ring
