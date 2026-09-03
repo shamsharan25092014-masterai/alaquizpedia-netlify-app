@@ -358,7 +358,14 @@ function evaluateBadges(userId, latestScore = null) {
     return Object.values(uniq);
 }
 
-function getUserAchievements(userId) {
+async function getUserAchievements(userId) {
+  // Compute total XP for the user
+  const xpInfo = getUserXPAndLevel(userId);
+  const totalXP = xpInfo.totalXP;
+  // Get unlocked badges
+  const badges = evaluateBadges(userId);
+  return { totalXP, badges };
+}
   return { unlocked: evaluateBadges(userId) };
 }
 
