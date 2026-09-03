@@ -3,11 +3,118 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Badges – ALA QUIZPEDIA</title>
+  <title>Badges & XP – ALA QUIZPEDIA</title>
   <link rel="stylesheet" href="css/style.css"/>
-  <link rel="stylesheet" href="badges.css"/>
+  <link rel="manifest" href="/manifest.json"/>
+  <style>
+    .xp-card {
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(236, 72, 153, 0.15));
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 16px;
+      padding: 1.8rem;
+      margin-bottom: 2.5rem;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+    }
+    .xp-stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .xp-stat-item {
+      background: rgba(255, 255, 255, 0.04);
+      border-radius: 12px;
+      padding: 1.2rem;
+      text-align: center;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    .xp-val {
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--accent-amber, #f59e0b);
+      margin-bottom: 0.3rem;
+    }
+    .xp-lbl {
+      font-size: 0.85rem;
+      color: var(--text-secondary, #94a3b8);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .level-progress-bar {
+      height: 12px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 999px;
+      overflow: hidden;
+      margin-top: 0.6rem;
+    }
+    .level-progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #6366f1, #a855f7, #ec4899);
+      border-radius: 999px;
+      transition: width 0.5s ease;
+    }
+    .badge-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 14px;
+      padding: 1.2rem;
+      text-align: center;
+      transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+      position: relative;
+    }
+    .badge-card.unlocked {
+      background: rgba(99, 102, 241, 0.08);
+      border-color: rgba(99, 102, 241, 0.4);
+      box-shadow: 0 4px 20px rgba(99, 102, 241, 0.15);
+    }
+    .badge-card.locked {
+      opacity: 0.55;
+      filter: grayscale(80%);
+    }
+    .badge-card:hover {
+      transform: translateY(-3px);
+    }
+    .badge-icon {
+      font-size: 2.5rem;
+      margin-bottom: 0.6rem;
+      display: inline-block;
+    }
+    .badge-name {
+      font-weight: 700;
+      font-size: 0.95rem;
+      margin-bottom: 0.3rem;
+      color: #fff;
+    }
+    .badge-desc {
+      font-size: 0.78rem;
+      color: var(--text-secondary, #94a3b8);
+      line-height: 1.3;
+    }
+    .badge-status {
+      display: inline-block;
+      margin-top: 0.6rem;
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 0.2rem 0.6rem;
+      border-radius: 999px;
+    }
+    .status-unlocked {
+      background: rgba(16, 185, 129, 0.2);
+      color: #10b981;
+    }
+    .status-locked {
+      background: rgba(255, 255, 255, 0.08);
+      color: #94a3b8;
+    }
+  </style>
 </head>
 <body>
+  <div class="bg-orbs">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+  </div>
+
   <nav class="navbar" id="navbar">
     <div class="nav-container">
       <a href="index.html" class="nav-logo">
@@ -17,19 +124,56 @@
       <div class="nav-links" id="navLinks">
         <a href="index.html" class="nav-link">Home</a>
         <a href="quizzes.html" class="nav-link">Quizzes</a>
-        <a href="badges.html" class="nav-link active">Badges</a>
-        <a href="login.html" class="btn btn-ghost">Login</a>
+        <a href="daily-quiz.html" class="nav-link">Daily Quiz</a>
+        <a href="leaderboard.html" class="nav-link">Leaderboard</a>
+        <a href="badges.html" class="nav-link active">Badges &amp; XP</a>
+        <div class="nav-auth" id="navAuth">
+          <a href="login.html" class="btn btn-ghost">Login</a>
+        </div>
       </div>
       <button class="hamburger" id="hamburger">☰</button>
     </div>
   </nav>
 
-  <section class="section" style="padding:2rem 0;">
+  <section class="section" style="padding:2.5rem 0;">
     <div class="container">
-      <h2 class="section-title"><span class="gradient-text">Your Badges</span></h2>
-      <p class="subtitle" style="margin-bottom:2rem;">Collect badges as you play quizzes.</p>
-      <div id="badgeContainer" class="badge-grid" style="display:flex;flex-wrap:wrap;gap:1rem;justify-content:center;">
-        <!-- Badges will be injected here -->
+      <div class="section-header" style="text-align:center;margin-bottom:2rem;">
+        <h1 class="section-title">⚡ Badges &amp; <span class="gradient-text">XP Progression</span></h1>
+        <p class="subtitle">Complete quizzes, score high, and level up to unlock all 50+ achievement badges!</p>
+      </div>
+
+      <!-- User XP Summary Box -->
+      <div class="xp-card" id="userXpCard">
+        <div class="xp-stats-grid">
+          <div class="xp-stat-item">
+            <div class="xp-val" id="totalXpDisplay">0</div>
+            <div class="xp-lbl">⚡ Total XP</div>
+          </div>
+          <div class="xp-stat-item">
+            <div class="xp-val" id="currentLevelDisplay" style="color:var(--accent-primary, #6366f1);">Lvl 1</div>
+            <div class="xp-lbl">Rank: <span id="rankTitle">Novice</span></div>
+          </div>
+          <div class="xp-stat-item">
+            <div class="xp-val" id="unlockedBadgesCount" style="color:#10b981;">0 / 50</div>
+            <div class="xp-lbl">🏆 Badges Unlocked</div>
+          </div>
+        </div>
+        
+        <div>
+          <div style="display:flex;justify-content:space-between;font-size:0.85rem;color:var(--text-secondary);">
+            <span>Level Progress</span>
+            <span id="levelProgressText">0 / 100 XP to next level</span>
+          </div>
+          <div class="level-progress-bar">
+            <div class="level-progress-fill" id="levelProgressBar" style="width: 0%;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Badges Showcase Grid -->
+      <h2 style="margin-bottom:1rem;font-size:1.4rem;">🏅 Badge Collection (50 Achievements)</h2>
+      <div id="badgeGrid" style="display:grid;grid-template-columns:repeat(auto-fill, minmax(180px, 1fr));gap:1rem;">
+        <!-- Injected via JavaScript -->
       </div>
     </div>
   </section>
@@ -40,12 +184,13 @@
         <div class="footer-brand">
           <span class="logo-icon">📚</span>
           <span class="logo-text">ALA<span class="accent">QUIZPEDIA</span></span>
-          <p>Created with ❤️ by <strong>A. SHAM SHARAN</strong></p>
+          <p><p>Created with <img src="assets/love_icon.svg" alt="love" class="love-icon"> by <strong>A. SHAM SHARAN</strong></p></p>
         </div>
         <div class="footer-links">
           <a href="quizzes.html">Quizzes</a>
+          <a href="daily-quiz.html">Daily Quiz</a>
           <a href="leaderboard.html">Leaderboard</a>
-          <a href="login.html">Login</a>
+          <a href="badges.html">Badges &amp; XP</a>
         </div>
       </div>
       <div class="footer-bottom"><p>© 2026 ALA QUIZPEDIA by A. SHAM SHARAN. All rights reserved.</p></div>
@@ -53,23 +198,121 @@
   </footer>
 
   <script src="js/storage.js"></script>
+  <script src="js/auth.js"></script>
   <script>
-    const user = getCurrentUser();
-    const container = document.getElementById('badgeContainer');
-    if (!user) {
-      container.innerHTML = '<p>Please <a href="login.html">log in</a> to see your badges.</p>';
-    } else {
-      const achievements = getUserAchievements(user.id);
-      if (achievements.unlocked.length === 0) {
-        container.innerHTML = '<p>No badges earned yet. Keep quizzing!</p>';
-      } else {
-        container.innerHTML = achievements.unlocked.map(b => `
-          <div class="badge-item" style="font-size:2rem;display:flex;align-items:center;gap:0.5rem;">
-            <span>${b.icon}</span>
-            <span>${b.name}</span>
-          </div>`).join('');
+    // Full List of 50 Achievements & Badges
+    const ALL_BADGES = [
+      { id: 'quiz_1', name: 'First Steps', icon: '🐣', desc: 'Complete your first quiz' },
+      { id: 'quiz_5', name: 'Quiz Apprentice', icon: '🥉', desc: 'Complete 5 quizzes' },
+      { id: 'quiz_10', name: 'Knowledge Seeker', icon: '🥈', desc: 'Complete 10 quizzes' },
+      { id: 'quiz_20', name: 'Dedicated Mind', icon: '🥇', desc: 'Complete 20 quizzes' },
+      { id: 'quiz_30', name: 'Quiz Enthusiast', icon: '🎖️', desc: 'Complete 30 quizzes' },
+      { id: 'quiz_50', name: 'Half Century', icon: '🏆', desc: 'Complete 50 quizzes' },
+      { id: 'quiz_100', name: 'Century Master', icon: '👑', desc: 'Complete 100 quizzes' },
+      { id: 'quiz_250', name: 'Quiz Grandmaster', icon: '💎', desc: 'Complete 250 quizzes' },
+      { id: 'quiz_500', name: 'Trivia Deity', icon: '🌌', desc: 'Complete 500 quizzes' },
+      { id: 'quiz_1000', name: 'Quizpedia Legend', icon: '⚡', desc: 'Complete 1000 quizzes' },
+
+      { id: 'high_score_80', name: 'Sharp Mind', icon: '🎯', desc: 'Score 80% or higher' },
+      { id: 'high_score_90', name: 'Excellence', icon: '🌟', desc: 'Score 90% or higher' },
+      { id: 'high_score_95', name: 'Genius Tier', icon: '✨', desc: 'Score 95% or higher' },
+      { id: 'perfect_score', name: 'Flawless Victory', icon: '💯', desc: 'Get 100% on any quiz' },
+      { id: 'fast_finish', name: 'Speed Runner', icon: '⚡', desc: 'Finish in less than half time' },
+      
+      { id: 'daily_player', name: 'Daily Contender', icon: '📅', desc: 'Play Today\'s Daily Quiz' },
+      { id: 'daily_streak_3', name: '3-Day Streak', icon: '🔥', desc: 'Play quizzes 3 days in a row' },
+      { id: 'daily_streak_7', name: 'Weekly Champion', icon: '🗓️', desc: 'Play quizzes 7 days in a row' },
+      { id: 'daily_streak_30', name: 'Monthly Icon', icon: '🌠', desc: 'Play quizzes 30 days in a row' },
+      { id: 'early_bird', name: 'Early Bird', icon: '🌅', desc: 'Complete a quiz before 8 AM' },
+
+      { id: 'night_owl', name: 'Night Owl', icon: '🦉', desc: 'Complete a quiz after 10 PM' },
+      { id: 'weekend_warrior', name: 'Weekend Warrior', icon: '🛡️', desc: 'Complete a quiz on the weekend' },
+      { id: 'history_buff', name: 'History Buff', icon: '📜', desc: 'Complete a History quiz' },
+      { id: 'science_wizard', name: 'Science Wizard', icon: '🔬', desc: 'Complete a Science quiz' },
+      { id: 'geo_explorer', name: 'Globe Trotter', icon: '🌍', desc: 'Complete a Geography quiz' },
+
+      { id: 'math_pro', name: 'Number Cruncher', icon: '🔢', desc: 'Complete a Math/Logic quiz' },
+      { id: 'tech_titan', name: 'Tech Titan', icon: '💻', desc: 'Complete a Technology quiz' },
+      { id: 'sports_star', name: 'All-Star Athlete', icon: '⚽', desc: 'Complete a Sports quiz' },
+      { id: 'art_connoisseur', name: 'Art Enthusiast', icon: '🎨', desc: 'Complete an Arts quiz' },
+      { id: 'nature_lover', name: 'Naturalist', icon: '🌿', desc: 'Complete a Nature quiz' },
+
+      { id: 'xp_100', name: 'Century Club', icon: '🪙', desc: 'Earn your first 100 XP' },
+      { id: 'xp_500', name: 'XP Dynamo', icon: '💰', desc: 'Accumulate 500 XP' },
+      { id: 'xp_1000', name: 'XP Overload', icon: '💳', desc: 'Accumulate 1,000 XP' },
+      { id: 'xp_5000', name: 'XP Tycoon', icon: '🏦', desc: 'Accumulate 5,000 XP' },
+      { id: 'xp_10000', name: 'Mythic Wealth', icon: '👑', desc: 'Accumulate 10,000 XP' },
+
+      { id: 'level_5', name: 'Rising Star', icon: '⭐', desc: 'Reach Player Level 5' },
+      { id: 'level_10', name: 'Seasoned Veteran', icon: '🎖️', desc: 'Reach Player Level 10' },
+      { id: 'level_25', name: 'Elite Master', icon: '🔱', desc: 'Reach Player Level 25' },
+      { id: 'level_50', name: 'Apex Predator', icon: '🐉', desc: 'Reach Player Level 50' },
+      { id: 'perfect_3', name: 'Triple Perfection', icon: '🎯', desc: 'Score 100% in 3 quizzes' },
+
+      { id: 'lightning_master', name: 'Lightning Reflexes', icon: '⚡', desc: 'Answer all questions in 15 seconds' },
+      { id: 'comeback_kid', name: 'Tenacity', icon: '🥊', desc: 'Retry a quiz and improve your score' },
+      { id: 'explorer', name: 'Curious Mind', icon: '🧭', desc: 'Try quizzes in 5 different categories' },
+      { id: 'marathoner', name: 'Quiz Marathoner', icon: '🏃', desc: 'Answer 50 questions in a single session' },
+      { id: 'scholar', name: 'ALA Scholar', icon: '📖', desc: 'Read a study material and take a quiz' },
+
+      { id: 'brainiac', name: 'Encyclopedia Brain', icon: '🧠', desc: 'Achieve 90%+ in 5 different quizzes' },
+      { id: 'top_10', name: 'Leaderboard Hero', icon: '🏅', desc: 'Enter the Top 10 on the Leaderboard' },
+      { id: 'podium', name: 'Podium Finisher', icon: '🥈', desc: 'Reach Top 3 on the Leaderboard' },
+      { id: 'champion', name: 'Grand Champion', icon: '🏆', desc: 'Reach #1 on the Leaderboard' },
+      { id: 'ultimate_legend', name: 'ALA QUIZPEDIA GOD', icon: '👑', desc: 'Unlock all major achievements' }
+    ];
+
+    function initBadgesPage() {
+      const user = getCurrentUser();
+      let totalXP = 0;
+      let levelInfo = { levelNum: 1, currentLevel: 'Novice', progress: 0, xpToNext: 100 };
+      let unlockedIds = new Set();
+
+      if (user) {
+        levelInfo = getUserXPAndLevel(user.id);
+        totalXP = levelInfo.totalXP || 0;
+        const achievements = getUserAchievements(user.id);
+        (achievements.unlocked || []).forEach(b => unlockedIds.add(b.id));
+
+        // Unlock XP badges automatically based on totalXP
+        if (totalXP >= 100) unlockedIds.add('xp_100');
+        if (totalXP >= 500) unlockedIds.add('xp_500');
+        if (totalXP >= 1000) unlockedIds.add('xp_1000');
+        if (totalXP >= 5000) unlockedIds.add('xp_5000');
+        if (totalXP >= 10000) unlockedIds.add('xp_10000');
+
+        if (levelInfo.levelNum >= 5) unlockedIds.add('level_5');
+        if (levelInfo.levelNum >= 10) unlockedIds.add('level_10');
+        if (levelInfo.levelNum >= 25) unlockedIds.add('level_25');
+        if (levelInfo.levelNum >= 50) unlockedIds.add('level_50');
       }
+
+      // Update XP Header Card
+      document.getElementById('totalXpDisplay').textContent = totalXP;
+      document.getElementById('currentLevelDisplay').textContent = `Lvl ${levelInfo.levelNum}`;
+      document.getElementById('rankTitle').textContent = levelInfo.currentLevel;
+      document.getElementById('unlockedBadgesCount').textContent = `${unlockedIds.size} / ${ALL_BADGES.length}`;
+      document.getElementById('levelProgressText').textContent = `${levelInfo.progress} / 100 XP to Level ${levelInfo.levelNum + 1}`;
+      document.getElementById('levelProgressBar').style.width = `${Math.min(100, Math.max(5, levelInfo.progress))}%`;
+
+      // Render all 50 badges
+      const grid = document.getElementById('badgeGrid');
+      grid.innerHTML = ALL_BADGES.map(badge => {
+        const isUnlocked = unlockedIds.has(badge.id);
+        return `
+          <div class="badge-card ${isUnlocked ? 'unlocked' : 'locked'}">
+            <div class="badge-icon">${badge.icon}</div>
+            <div class="badge-name">${badge.name}</div>
+            <div class="badge-desc">${badge.desc}</div>
+            <span class="badge-status ${isUnlocked ? 'status-unlocked' : 'status-locked'}">
+              ${isUnlocked ? '✓ Unlocked' : '🔒 Locked'}
+            </span>
+          </div>
+        `;
+      }).join('');
     }
+
+    initBadgesPage();
   </script>
 </body>
 </html>
