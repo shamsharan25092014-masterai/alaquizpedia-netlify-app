@@ -1,0 +1,62 @@
+[
+  {
+    "id": 1,
+    "question": "What is India’s rank in the Environmental Performance Index (EPI) 2026?",
+    "options": ["170th", "174th", "176th", "177th"],
+    "answer": "176th"
+  },
+  {
+    "id": 2,
+    "question": "Which state launched the Vidya Vahini Yojana for girl students in August 2026?",
+    "options": ["Jammu & Kashmir", "Uttarakhand", "Bihar", "Delhi"],
+    "answer": "Delhi"
+  },
+  {
+    "id": 3,
+    "question": "India’s 45th UNESCO World Heritage Site recognized in August 2026 is?",
+    "options": ["Ajanta Caves", "Maratha Military Landscape", "Konark Temple", "Nalanda University"],
+    "answer": "Maratha Military Landscape"
+  },
+  {
+    "id": 4,
+    "question": "Which Indian weightlifter won silver at the 2026 Commonwealth Games?",
+    "options": ["Mirabai Chanu", "Lovepreet Singh", "Jeremy Lalrinnunga", "Sathish Sivalingam"],
+    "answer": "Lovepreet Singh"
+  },
+  {
+    "id": 5,
+    "question": "Which country received medical aid from India in August 2026?",
+    "options": ["Kenya", "Nepal", "Sri Lanka", "Bangladesh"],
+    "answer": "Kenya"
+  },
+  {
+    "id": 6,
+    "question": "Which Indian company signed a helicopter engine deal with Safran in August 2026?",
+    "options": ["HAL", "DRDO", "ISRO", "BEL"],
+    "answer": "HAL"
+  },
+  {
+    "id": 7,
+    "question": "Which scheme was integrated under Mission Shakti in August 2026?",
+    "options": ["Beti Bachao Beti Padhao", "PM Kisan", "Ayushman Bharat", "Digital India"],
+    "answer": "Beti Bachao Beti Padhao"
+  },
+  {
+    "id": 8,
+    "question": "Where was the BRICS Health Ministers’ meeting held in August 2026?",
+    "options": ["New Delhi", "Chandigarh", "Mumbai", "Bengaluru"],
+    "answer": "Chandigarh"
+  },
+  {
+    "id": 9,
+    "question": "Which Indian state achieved 100% railway electrification in August 2026?",
+    "options": ["Kerala", "Odisha", "Uttarakhand", "Punjab"],
+    "answer": "Uttarakhand"
+  },
+  {
+    "id": 10,
+    "question": "Which Indian cricketer scored his 50th ODI century in August 2026?",
+    "options": ["Virat Kohli", "Rohit Sharma", "Shubman Gill", "KL Rahul"],
+    "answer": "Rohit Sharma"
+  }
+]
