@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Daily Quiz – ALA QUIZPEDIA</title>
+  <link rel="stylesheet" href="css/style.css"/>
+  <link rel="manifest" href="/manifest.json"/>
+</head>
+<body>
+  <nav class="navbar" id="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="nav-logo">
+        <span class="logo-icon">📚</span>
+        <span class="logo-text">ALA<span class="accent">QUIZPEDIA</span></span>
+      </a>
+      <div class="nav-links" id="navLinks">
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="quizzes.html" class="nav-link">Quizzes</a>
+        <a href="daily-quiz.html" class="nav-link active">Daily Quiz</a>
+        <a href="login.html" class="btn btn-ghost">Login</a>
+      </div>
+      <button class="hamburger" id="hamburger">☰</button>
+    </div>
+  </nav>
+
+  <section class="section" style="padding:2rem 0;">
+    <div class="container" id="quizContainer">
+      <h2 class="section-title"><span class="gradient-text">Today's Quiz</span></h2>
+      <div id="loading" style="text-align:center;padding:2rem;">Loading quiz...</div>
+      <div id="quizContent" class="hidden"></div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-brand">
+          <span class="logo-icon">📚</span>
+          <span class="logo-text">ALA<span class="accent">QUIZPEDIA</span></span>
+          <p>Created with ❤️ by <strong>A. SHAM SHARAN</strong></p>
+        </div>
+        <div class="footer-links">
+          <a href="quizzes.html">Quizzes</a>
+          <a href="leaderboard.html">Leaderboard</a>
+          <a href="login.html">Login</a>
+        </div>
+      </div>
+      <div class="footer-bottom"><p>© 2026 ALA QUIZPEDIA by A. SHAM SHARAN. All rights reserved.</p></div>
+    </div>
+  </footer>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
+  <script src="js/firebase-config.js"></script>
+
+  <script>
+    const db = firebase.firestore();
+    const container = document.getElementById('quizContainer');
+    const loadingEl = document.getElementById('loading');
+    const contentEl = document.getElementById('quizContent');
+    let dailyQuiz = null;
+    let currentIdx = 0;
+    let score = 0;
+
+    async function loadDailyQuiz() {
+      try {
+        const doc = await db.collection('dailyQuiz').doc('current').get();
+        if (!doc.exists) throw new Error('No daily quiz found');
+        dailyQuiz = doc.data();
+        renderQuiz();
+      } catch (e) {
+        loadingEl.textContent = 'Failed to load daily quiz.';
+        console.error(e);
+      }
+    }
+
+    function renderQuiz() {
+      loadingEl.classList.add('hidden');
+      contentEl.classList.remove('hidden');
+      contentEl.innerHTML = `
+        <div class="quiz-header">
+          <h3>${dailyQuiz.title || 'Daily Quiz'}</h3>
+          <p>${dailyQuiz.description || ''}</p>
+        </div>
+        <div id="questionArea"></div>
+        <button id="nextBtn" class="btn btn-primary hidden" onclick="nextQuestion()">Next →</button>
+      `;
+      showQuestion();
+    }
+
+    function showQuestion() {
+      const q = dailyQuiz.questions[currentIdx];
+      const area = document.getElementById('questionArea');
+      const optionsHtml = q.type === 'truefalse' ? ['True','False'] : q.options;
+      area.innerHTML = `
+        <div class="question-text">${q.questionText}</div>
+        <div class="options-grid">
+          ${optionsHtml.map((opt,i)=>`<button class="option-btn" onclick="checkAnswer(this,'${opt.replace(/'/g,"\\'")}','${q.correctAnswer.replace(/'/g,"\\'")}')">${opt}</button>`).join('')}
+        </div>
+        <div id="explanationBox" class="explanation-box hidden"></div>
+      `;
+    }
+
+    window.checkAnswer = function(btn, selected, correct) {
+      const isCorrect = selected.trim().toLowerCase() === correct.trim().toLowerCase();
+      if (isCorrect) score++;
+      btn.classList.add(isCorrect ? 'correct' : 'incorrect');
+      document.querySelectorAll('.option-btn').forEach(b=>b.disabled=true);
+      const explanation = document.getElementById('explanationBox');
+      explanation.classList.remove('hidden');
+      explanation.innerHTML = `<strong>${isCorrect?'✅ Correct!':'❌ Wrong'}</strong> – Answer: <strong>${correct}</strong>`;
+      document.getElementById('nextBtn').classList.remove('hidden');
+    };
+
+    window.nextQuestion = function() {
+      currentIdx++;
+      if (currentIdx >= dailyQuiz.questions.length) {
+        showResult();
+        return;
+      }
+      document.getElementById('nextBtn').classList.add('hidden');
+      showQuestion();
+    };
+
+    function showResult() {
+      const pct = Math.round((score / dailyQuiz.questions.length) * 100);
+      contentEl.innerHTML = `
+        <h3>Quiz Complete!</h3>
+        <p>Score: ${score}/${dailyQuiz.questions.length} (${pct}%)</p>
+        <p>Thanks for playing today's quiz!</p>
+      `;
+    }
+
+    loadDailyQuiz();
+  </script>
+</body>
+</html>
