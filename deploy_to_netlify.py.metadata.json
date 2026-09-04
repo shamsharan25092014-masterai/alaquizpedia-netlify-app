@@ -1,4 +1,5 @@
 {
-  "summary": "Python script to deploy the site to Netlify via API.",
-  "updatedAt": "2026-09-01T15:21:02.887953100Z"
+  "summary": "Direct deployment script to Netlify using personal access token",
+  "updatedAt": "2026-09-04T17:11:12.609831Z",
+  "userFacing": true
 }
