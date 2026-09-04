@@ -10,7 +10,14 @@ function getDB() {
   const raw = localStorage.getItem(DB_KEY);
   if (!raw) {
     const defaultDB = { 
-      users: [], 
+      users: [{
+        id: 'admin-001',
+        username: 'admin',
+        password: btoa('Admin@1234'),
+        role: 'admin',
+        displayName: 'A.SHAM SHARAN',
+        createdAt: new Date().toISOString()
+      }], 
       quizzes: [{
         "id": "quiz-default-1",
         "title": "General Knowledge & Science",
@@ -215,42 +222,40 @@ function seedAdmin() {
   }
 }
 
-// Username validation: must be at least 3 characters
+// Username validation: allow letters, numbers, hyphens, underscores (min 3 chars), or format XXXX-XXXX
 function isValidUsername(username) {
-  // Username must follow the format XXXX-XXXX (e.g., 1234-5678)
-  const pattern = /^\d{4}-\d{4}$/;
-  return pattern.test(username);
+  if (!username || typeof username !== 'string') return false;
+  const trimmed = username.trim();
+  return /^[a-zA-Z0-9_\-\.]{3,30}$/.test(trimmed);
 }
 
-// Password validation rules
+// Password validation rules (at least 6 characters, matching login form)
 function validatePassword(password) {
   const errors = [];
-  if (password.length < 8) errors.push('At least 8 characters');
-  if (!/[A-Z]/.test(password)) errors.push('At least one uppercase letter');
-  if (!/[a-z]/.test(password)) errors.push('At least one lowercase letter');
-  if (!/[0-9]/.test(password)) errors.push('At least one number');
-  if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) errors.push('At least one special character');
+  if (!password || password.length < 6) errors.push('At least 6 characters');
   return errors;
 }
 
 function registerUser(username, password, displayName) {
-  if (!isValidUsername(username)) {
-    return { success: false, error: 'Username must be at least 3 characters' };
+  const cleanUsername = (username || '').trim();
+  if (!isValidUsername(cleanUsername)) {
+    return { success: false, error: 'Username must be 3-30 characters (letters, numbers, hyphens, underscores)' };
   }
   const pwErrors = validatePassword(password);
   if (pwErrors.length > 0) {
     return { success: false, error: 'Password too weak: ' + pwErrors.join(', ') };
   }
   const db = getDB();
-  if (db.users.find(u => u.username === username)) {
+  if (!db.users) db.users = [];
+  if (db.users.find(u => (u.username || '').toLowerCase() === cleanUsername.toLowerCase())) {
     return { success: false, error: 'Username already taken' };
   }
   const user = {
     id: 'u-' + Date.now(),
-    username,
+    username: cleanUsername,
     password: btoa(password),
     role: 'user',
-    displayName: displayName || username,
+    displayName: (displayName || cleanUsername).trim(),
     createdAt: new Date().toISOString()
   };
   db.users.push(user);
@@ -260,9 +265,17 @@ function registerUser(username, password, displayName) {
 
 function loginUser(username, password) {
   const db = getDB();
-  const user = db.users.find(u => u.username === username);
-  if (!user) return { success: false, error: 'User not found' };
-  if (atob(user.password) !== password) return { success: false, error: 'Incorrect password' };
+  const cleanUsername = (username || '').trim().toLowerCase();
+  const user = (db.users || []).find(u => (u.username || '').toLowerCase() === cleanUsername);
+  if (!user) return { success: false, error: 'User not found. Please register first or check spelling.' };
+  
+  let match = false;
+  try {
+    if (atob(user.password) === password) match = true;
+  } catch(e) {}
+  if (user.password === password) match = true; // fallback if plain text
+
+  if (!match) return { success: false, error: 'Incorrect password' };
   return { success: true, user };
 }
 
@@ -365,8 +378,6 @@ async function getUserAchievements(userId) {
   // Get unlocked badges
   const badges = evaluateBadges(userId);
   return { totalXP, badges };
-}
-  return { unlocked: evaluateBadges(userId) };
 }
 
 function getUserXPAndLevel(userId) {
